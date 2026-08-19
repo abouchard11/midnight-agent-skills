@@ -1,0 +1,115 @@
+{
+  "name": "dozen",
+  "goal": "Run a micro-creator swarm from brief to payout without the model owning accept, post, or pay.",
+  "stop": {
+    "maxWallMinutes": 10080,
+    "maxUsd": 50,
+    "noProgressSteps": 8
+  },
+  "loops": [
+    {
+      "id": "draft-verify-revise",
+      "nodes": ["draft", "verify", "revise"],
+      "maxAttempts": 2,
+      "restarts": []
+    }
+  ],
+  "nodes": [
+    {
+      "id": "intake",
+      "dependsOn": [],
+      "owns": ["parsed_brief"],
+      "closer": "script",
+      "irreversible": false,
+      "doneWhen": "Budget >= $200 and niche + platform present"
+    },
+    {
+      "id": "safety",
+      "dependsOn": ["intake"],
+      "owns": ["policy"],
+      "closer": "policy",
+      "irreversible": true,
+      "doneWhen": "Fail-closed banned verticals"
+    },
+    {
+      "id": "assemble",
+      "dependsOn": ["safety"],
+      "owns": ["slot_list"],
+      "closer": "script",
+      "irreversible": false,
+      "doneWhen": "6-16 micros, fee math, fake-risk < 70 bps"
+    },
+    {
+      "id": "offer",
+      "dependsOn": ["assemble"],
+      "owns": ["payouts"],
+      "closer": "script",
+      "irreversible": false,
+      "doneWhen": "Payout inside each creator rate band and brand escrow funded"
+    },
+    {
+      "id": "accept",
+      "dependsOn": ["offer"],
+      "owns": ["slot.status"],
+      "closer": "human",
+      "irreversible": true,
+      "doneWhen": ">=60% accept or explicit bench refill"
+    },
+    {
+      "id": "draft",
+      "dependsOn": ["accept"],
+      "owns": ["captions"],
+      "closer": "model",
+      "irreversible": false,
+      "doneWhen": "Drafts exist only for accepted seats"
+    },
+    {
+      "id": "verify",
+      "dependsOn": ["draft"],
+      "owns": ["verifiers"],
+      "closer": "script",
+      "irreversible": false,
+      "doneWhen": "FTC disclosure + must-say + avoid"
+    },
+    {
+      "id": "revise",
+      "dependsOn": ["verify"],
+      "owns": ["captions"],
+      "closer": "script",
+      "irreversible": false,
+      "doneWhen": "<=2 selective retries on this subgraph only"
+    },
+    {
+      "id": "review",
+      "dependsOn": ["revise"],
+      "owns": ["brand_taste"],
+      "closer": "human",
+      "irreversible": false,
+      "doneWhen": "Brand sees only the batch"
+    },
+    {
+      "id": "post",
+      "dependsOn": ["review"],
+      "owns": ["live_urls"],
+      "closer": "human",
+      "irreversible": true,
+      "doneWhen": "Disclosure still present on every accepted slot"
+    },
+    {
+      "id": "measure",
+      "dependsOn": ["post"],
+      "owns": ["er"],
+      "closer": "script",
+      "irreversible": false,
+      "doneWhen": "ER not anomalous vs baseline"
+    },
+    {
+      "id": "pay",
+      "dependsOn": ["measure"],
+      "owns": ["escrow"],
+      "closer": "policy",
+      "irreversible": true,
+      "doneWhen": "Escrow funded + posted + no open dispute"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "name": "gbrain-memory-loop",
+  "goal": "Persist only verified or decided notes. The model drafts; it does not own remember or forget.",
+  "stop": {
+    "maxWallMinutes": 15,
+    "maxUsd": 2,
+    "noProgressSteps": 3
+  },
+  "loops": [
+    {
+      "id": "draft-verify",
+      "nodes": ["draft-note", "verify-note"],
+      "maxAttempts": 2,
+      "restarts": []
+    }
+  ],
+  "nodes": [
+    {
+      "id": "recall",
+      "dependsOn": [],
+      "owns": ["hits"],
+      "closer": "script",
+      "irreversible": false,
+      "doneWhen": "GBrain think or Graphiti search ran, or both stores were probed down"
+    },
+    {
+      "id": "draft-note",
+      "dependsOn": ["recall"],
+      "owns": ["scratch_note"],
+      "closer": "model",
+      "irreversible": false,
+      "doneWhen": "Scratch note has tier, lane, and a single fact family"
+    },
+    {
+      "id": "verify-note",
+      "dependsOn": ["draft-note"],
+      "owns": ["tier"],
+      "closer": "script",
+      "irreversible": false,
+      "doneWhen": "Tier is verified or decided, lane is legal, no secrets, not a duplicate"
+    },
+    {
+      "id": "remember",
+      "dependsOn": ["verify-note"],
+      "owns": ["gbrain_page", "graphiti_episode"],
+      "closer": "policy",
+      "irreversible": true,
+      "doneWhen": "One durable lane written, or an explicit skip if nothing verified"
+    },
+    {
+      "id": "forget",
+      "dependsOn": ["remember"],
+      "owns": ["retraction"],
+      "closer": "human",
+      "irreversible": true,
+      "doneWhen": "Human or policy approved the retraction; model only proposed it"
+    }
+  ]
+}

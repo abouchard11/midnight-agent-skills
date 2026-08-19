@@ -1,0 +1,51 @@
+{
+  "name": "coding-loop",
+  "goal": "Ship one verified increment. The model writes code. A human owns plan and merge.",
+  "stop": {
+    "maxWallMinutes": 90,
+    "maxUsd": 8,
+    "noProgressSteps": 3
+  },
+  "loops": [
+    {
+      "id": "implement-verify",
+      "nodes": ["implement", "verify"],
+      "maxAttempts": 3,
+      "restarts": []
+    }
+  ],
+  "nodes": [
+    {
+      "id": "plan",
+      "dependsOn": [],
+      "owns": ["PLAN.md"],
+      "closer": "human",
+      "irreversible": false,
+      "doneWhen": "PLAN.md exists and contains measurable success criteria"
+    },
+    {
+      "id": "implement",
+      "dependsOn": ["plan"],
+      "owns": ["src/", "tests/"],
+      "closer": "model",
+      "irreversible": false,
+      "doneWhen": "Targeted tests exist and the diff is reviewable"
+    },
+    {
+      "id": "verify",
+      "dependsOn": ["implement"],
+      "owns": [],
+      "closer": "script",
+      "irreversible": false,
+      "doneWhen": "Verifier returns CLEAN_PASS"
+    },
+    {
+      "id": "merge",
+      "dependsOn": ["verify"],
+      "owns": ["git"],
+      "closer": "human",
+      "irreversible": true,
+      "doneWhen": "Human understands the diff and commits"
+    }
+  ]
+}

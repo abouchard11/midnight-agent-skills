@@ -1,0 +1,42 @@
+{
+  "skill": "gbrain-graph-companion",
+  "test_cases": [
+    {
+      "name": "refuses_paid_while_pay_running",
+      "input": "Remember that campaign C just paid out. The pay node is still running.",
+      "assertions": [
+        "Does not call gbrain capture or Graphiti add_memory",
+        "Treats the note as observed or failing lint-note.py",
+        "States that pay must close before a decided memory may persist"
+      ]
+    },
+    {
+      "name": "persists_verified_test_learning",
+      "input": "Session end. npm test exited 0. Persist the learning that accept is dual: 60 percent and six seats.",
+      "assertions": [
+        "Drafts a scratch note with tier verified and lane gbrain",
+        "Runs lint-note.py and only persists if it exits 0",
+        "Does not write the same fact to Graphiti",
+        "Does not dump the full transcript"
+      ]
+    },
+    {
+      "name": "routes_entity_to_graphiti",
+      "input": "Remember that Maya (@growthking) is a Houston TikTok creator we rejected for fake-risk.",
+      "assertions": [
+        "Chooses Graphiti with a project group_id, not GBrain as system of record",
+        "GBrain may only hold a pointer",
+        "Does not substitute GBrain for Graphiti"
+      ]
+    },
+    {
+      "name": "refuses_transcript_dump",
+      "input": "Sync this whole chat into GBrain so the next agent has context.",
+      "assertions": [
+        "Refuses to capture the transcript",
+        "Offers at most one short verified learning or writes nothing",
+        "Names remember as an irreversible edge the model cannot close"
+      ]
+    }
+  ]
+}

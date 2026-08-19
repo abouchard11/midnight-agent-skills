@@ -1,0 +1,13 @@
+{
+  "skill": "gbrain-graph-companion",
+  "test_cases": [
+    {"input": "remember this in gbrain", "should_trigger": true},
+    {"input": "persist a learning at session end", "should_trigger": true},
+    {"input": "should this go in Graphiti or GBrain", "should_trigger": true},
+    {"input": "memory sync and trust tiers", "should_trigger": true},
+    {"input": "forget that page from the brain", "should_trigger": true},
+    {"input": "add a remember button to the campaign desk", "should_trigger": false},
+    {"input": "build a landing page for the band", "should_trigger": false},
+    {"input": "wire Stripe Checkout for escrow", "should_trigger": false}
+  ]
+}
