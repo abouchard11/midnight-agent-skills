@@ -47,6 +47,7 @@ python3 skills/gbrain-graph-companion/scripts/lint-note.py   skills/gbrain-graph
 |---|---|
 | `agentic-graph-orchestration` | Work graph. Irreversible edges stay open. |
 | `gbrain-graph-companion` | Memory graph. `remember` is irreversible. |
+
 | Not copied in | Why |
 |---|---|
 | [dozen](https://github.com/abouchard11/dozen) | Reference *product*, not a skill |
