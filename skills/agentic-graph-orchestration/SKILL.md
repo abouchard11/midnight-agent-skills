@@ -127,6 +127,7 @@ The linter fails a graph that is missing a verifier, a stop condition, a closer,
 - `references/prior-art.md`
 - `examples/dozen-graph.md`
 - `examples/coding-loop.md`
+- `examples/grok-one-shot-product-build-prompt.md` — read when a user wants Grok, Claude, or Codex to execute a large autonomous product build from one detailed prompt.
 - `companions/gbrain/SKILL.md`
 
 ## Anti-patterns
