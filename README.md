@@ -13,6 +13,20 @@ The model does not own accept, post, pay, or remember.
 
 This is a clone of those two skills in one repo so they can be dropped into Claude / Codex / Grok as a pair. Canonical singles stay in their own repos. Edit there, copy here.
 
+## Stack
+
+```
+agentic-graph-orchestration     ← canonical work topology + linter
+        ↑ consumed by
+midnight-agent-skills           ← THIS REPO: packaging pair (work + memory closer)
+        ↑ consumed by
+midnight-reasoning              ← reflection / critic library
+        ↑ consumed by
+hermes-command-center           ← operator UI + run state
+```
+
+Ownership is directed. Canonical skill content lives upstream. This repo packages the pair for install; edit upstream, copy here.
+
 ## How they compose
 
 ```
@@ -55,8 +69,11 @@ python3 skills/gbrain-graph-companion/scripts/lint-note.py   skills/gbrain-graph
 | [llm-safety-gate](https://github.com/abouchard11/llm-safety-gate) | Fail-closed classifier machine. Import it; do not wrap it as a skill. |
 | [midnight-seo-skills](https://github.com/abouchard11/midnight-seo-skills) | Portfolio SEO. Does not share this hard rule. |
 | [claude-desktop-skills](https://github.com/abouchard11/claude-desktop-skills) | Narrow knowledge-work prompts. Sibling craft, different layer. |
+| [midnight-reasoning](https://github.com/abouchard11/midnight-reasoning) | Reflection library — load as its own skill; not duplicated here yet |
 
 ## Related
 
-- [agentic-graph-orchestration](https://github.com/abouchard11/agentic-graph-orchestration) — work topology (private)
+- [agentic-graph-orchestration](https://github.com/abouchard11/agentic-graph-orchestration) — work topology (private, canonical)
+- [midnight-reasoning](https://github.com/abouchard11/midnight-reasoning) — cross-run reflection / critic (private)
+- [hermes-command-center](https://github.com/abouchard11/hermes-command-center) — operator UI (private)
 - [dozen](https://github.com/abouchard11/dozen) — marketplace graph these skills were dogfooded on (private)
