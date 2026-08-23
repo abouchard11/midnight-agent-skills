@@ -53,6 +53,8 @@ Rules:
 - Isolate mutable state (git worktrees, separate scratchpads, or pure functional handoffs).
 - Human taste review nodes stay outside the automated loop.
 - Do not auto-close external edges to make a demo look finished.
+- Keep a human-closed node off the automated implementation path unless a real unresolved human decision is required.
+- For independent checker nodes, declare optional `verifies: [producerNodeId]` and give the checker no overlapping owned surface.
 
 Then encode the table as JSON and run `node scripts/lint-graph.js <file>`. A graph that cannot pass the linter is not ready to implement.
 
@@ -116,7 +118,7 @@ node scripts/lint-graph.js companions/gbrain/examples/memory-loop.json
 node --test scripts/lint-graph.test.js
 ```
 
-The linter fails a graph that is missing a verifier, a stop condition, a closer, or that lets the model own an irreversible edge.
+The linter fails a graph that is missing a verifier, stop condition, or closer; lets the model own an irreversible edge; contains dependency cycles or unreachable cycle components; assigns the same mutable surface to unordered parallel nodes; or declares a self-verifying or ownership-conflicted verifier.
 
 ## Reference files
 
