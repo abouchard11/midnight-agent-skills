@@ -102,6 +102,7 @@ Inspect ownership and licensing before copying code. Prefer an adapted pattern o
 12. Never weaken a verifier to make the graph finish.
 13. Never expose secrets or unnecessary customer content in logs, fixtures, receipts, or memory.
 14. Preserve licensing and third-party notices. Add no first-party permissive grant without explicit approval.
+15. Do not place a human-closed node on the automated implementation path unless an unresolved human decision is genuinely required.
 
 ## Repository truth policy
 
@@ -150,8 +151,9 @@ Use at least this topology, adapting ownership and verifiers to the repository:
 |---|---|---|---|---|
 | preflight | — | baseline evidence | script | Repository truth and baseline verifiers are recorded |
 | truth-audit | preflight | `docs/TRUTH-AUDIT.md` | script | Contradictions and authority order are explicit |
-| product-contract | truth-audit | PRD delta and contracts | human | Success criteria and irreversible boundaries are explicit |
-| architecture | product-contract | ADRs and shared interfaces | script | Trust boundaries and data contracts are testable |
+| contract-draft | truth-audit | PRD delta and contracts | model | Success criteria and irreversible boundaries are explicit |
+| contract-verify | contract-draft | no product files | policy | The contract matches the stated objective without inventing a public, legal, or production decision |
+| architecture | contract-verify | ADRs and shared interfaces | script | Trust boundaries and data contracts are testable |
 | implement-a | architecture | isolated file scope A | model | Targeted tests pass |
 | implement-b | architecture | isolated file scope B | model | Targeted tests pass |
 | integrate | implement-a, implement-b | integration surface | model | End-to-end dry run passes |
@@ -168,7 +170,7 @@ Graph requirements:
 - `maxUsd`: `{MAX_USD}`
 - `noProgressSteps`: `3`
 - implementation-verification loops: maximum 3 attempts;
-- inner loops may not restart preflight, truth-audit, or the product contract;
+- inner loops may not restart preflight, truth-audit, contract-draft, or contract-verify;
 - irreversible nodes cannot use `closer: model`.
 
 Run:
@@ -178,6 +180,8 @@ node <resolved-skill-path>/scripts/lint-graph.js docs/workgraphs/{GRAPH_NAME}.js
 ```
 
 Require `PASS` before implementation.
+
+For independent verifier nodes, populate an optional `verifies` array with the producer-node IDs and keep verifier ownership empty or non-overlapping. The linter rejects dependency cycles, unreachable cycle components, parallel ownership conflicts, self-verification, and verifier ownership of producer surfaces.
 
 ## Architecture requirements
 
@@ -275,4 +279,3 @@ Return one concise report:
 - exact human decisions required next.
 
 Do not ask routine implementation questions. Infer conservative reversible choices, execute them, and document them.
-

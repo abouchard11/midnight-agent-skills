@@ -79,3 +79,82 @@ test("inner loop cannot restart intake", () => {
   });
   assert.ok(errors.some((e) => /must not restart/.test(e)));
 });
+
+test("dependency cycles fail", () => {
+  const errors = lintGraph({
+    name: "cycle",
+    goal: "Reject a graph whose dependency structure cannot be scheduled.",
+    stop: { noProgressSteps: 2 },
+    nodes: [
+      { id: "a", dependsOn: ["b"], owns: ["a"], closer: "script", doneWhen: "a completes" },
+      { id: "b", dependsOn: ["a"], owns: ["b"], closer: "script", doneWhen: "b completes" },
+    ],
+  });
+  assert.ok(errors.some((error) => /dependency cycle/.test(error)));
+  assert.ok(errors.some((error) => /no root node/.test(error)));
+});
+
+test("parallel nodes cannot own the same mutable surface", () => {
+  const errors = lintGraph({
+    name: "parallel-conflict",
+    goal: "Detect parallel workers that would overwrite the same output.",
+    stop: { noProgressSteps: 2 },
+    nodes: [
+      { id: "intake", dependsOn: [], owns: ["brief"], closer: "script", doneWhen: "brief parsed" },
+      { id: "left", dependsOn: ["intake"], owns: ["src/shared.js"], closer: "model", doneWhen: "left draft exists" },
+      { id: "right", dependsOn: ["intake"], owns: ["src/shared.js"], closer: "model", doneWhen: "right draft exists" },
+    ],
+  });
+  assert.ok(errors.some((error) => /parallel ownership conflict/.test(error)));
+});
+
+test("sequential nodes may deliberately revise the same surface", () => {
+  const errors = lintGraph({
+    name: "sequential-revision",
+    goal: "Allow a later node to revise an earlier node's owned output.",
+    stop: { noProgressSteps: 2 },
+    nodes: [
+      { id: "draft", dependsOn: [], owns: ["src/shared.js"], closer: "model", doneWhen: "draft exists" },
+      { id: "revise", dependsOn: ["draft"], owns: ["src/shared.js"], closer: "script", doneWhen: "revision verified" },
+    ],
+  });
+  assert.deepEqual(errors, []);
+});
+
+test("declared verifier must be downstream and ownership-independent", () => {
+  const errors = lintGraph({
+    name: "self-verification",
+    goal: "Reject a verifier that edits the same surface it claims to check.",
+    stop: { noProgressSteps: 2 },
+    nodes: [
+      { id: "produce", dependsOn: [], owns: ["src/core.js"], closer: "model", doneWhen: "core exists" },
+      {
+        id: "verify",
+        dependsOn: ["produce"],
+        owns: ["src/core.js"],
+        verifies: ["produce", "verify"],
+        closer: "script",
+        doneWhen: "verification passes",
+      },
+    ],
+  });
+  assert.ok(errors.some((error) => /verifier owns producer surface/.test(error)));
+  assert.ok(errors.some((error) => /verifier cannot verify itself/.test(error)));
+});
+
+test("duplicate dependencies and disconnected cycle components fail", () => {
+  const errors = lintGraph({
+    name: "unreachable",
+    goal: "Reject invalid dependency declarations and unreachable components.",
+    stop: { noProgressSteps: 2 },
+    nodes: [
+      { id: "root", dependsOn: [], owns: ["root"], closer: "script", doneWhen: "root completes" },
+      { id: "child", dependsOn: ["root", "root"], owns: ["child"], closer: "script", doneWhen: "child completes" },
+      { id: "x", dependsOn: ["y"], owns: ["x"], closer: "script", doneWhen: "x completes" },
+      { id: "y", dependsOn: ["x"], owns: ["y"], closer: "script", doneWhen: "y completes" },
+    ],
+  });
+  assert.ok(errors.some((error) => /duplicate dependency root/.test(error)));
+  assert.ok(errors.some((error) => /x: unreachable/.test(error)));
+  assert.ok(errors.some((error) => /y: unreachable/.test(error)));
+});
