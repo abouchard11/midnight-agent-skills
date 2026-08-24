@@ -23,7 +23,7 @@ Machine spec: `examples/dozen-graph.json` (must pass `node scripts/lint-graph.js
 
 ## Closed loops
 
-- **Inner:** draft → verify → revise (max 2). Intake and assemble are not restarted.
+- **Inner:** draft → verify → revise (max 2). Intake and assemble are not restarted. The script checker declares `verifies: ["draft"]`.
 - **Outer:** accept stays `running` until the threshold or an explicit refill. Post stays `running` until every accepted slot posts.
 
 ## What was wrong in the one-pass build
