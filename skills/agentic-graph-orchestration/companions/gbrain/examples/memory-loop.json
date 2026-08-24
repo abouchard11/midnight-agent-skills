@@ -35,6 +35,7 @@
       "id": "verify-note",
       "dependsOn": ["draft-note"],
       "owns": ["tier"],
+      "verifies": ["draft-note"],
       "closer": "script",
       "irreversible": false,
       "doneWhen": "Tier is verified or decided, lane is legal, no secrets, not a duplicate"

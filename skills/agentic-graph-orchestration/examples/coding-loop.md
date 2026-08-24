@@ -13,4 +13,4 @@ Machine spec: `examples/coding-loop.json`.
 
 The model may implement. It may not declare the plan done, and it may not merge.
 
-Inner loop: implement → verify, max 3, does not rewrite PLAN.md.
+Inner loop: implement → verify, max 3, does not rewrite PLAN.md. The script checker declares `verifies: ["implement"]`, so the loop cannot structurally self-close.

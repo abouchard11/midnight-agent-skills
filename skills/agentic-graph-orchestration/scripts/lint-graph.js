@@ -21,7 +21,43 @@ const IRREVERSIBLE_IDS = new Set([
   "persist",
 ]);
 
+// Node ids are prose, so exact-name checks are too easy to evade accidentally.
+// Keep this list deliberately narrow: infer consequence from clear verb/object
+// compounds, while leaving ambiguous implementation verbs (build, write, run)
+// to the explicit `irreversible: true` declaration.
+const IRREVERSIBLE_ID_PATTERNS = [
+  /^(?:accept|post|pay|publish|transfer|delete|merge|deploy|remember|forget|persist)(?:[-_:]|$)/,
+  /^(?:release|issue|trigger)[-_:](?:payout|payment|refund)(?:[-_:]|$)/,
+  /^(?:place|submit|execute|cancel)[-_:](?:order|trade)(?:[-_:]|$)/,
+  /^send[-_:](?:email|message|notification)(?:[-_:]|$)/,
+  /^(?:store|write)[-_:](?:memory|brain|ledger|database|db)(?:[-_:]|$)/,
+  /^approve[-_:](?:transfer|payment|payout|refund|order|trade|publish|post|deploy|merge)(?:[-_:]|$)/,
+];
+
 const CLOSERS = new Set(["model", "human", "policy", "script"]);
+
+function inferredIrreversibleId(id) {
+  const normalized = String(id || "").trim().toLowerCase();
+  return IRREVERSIBLE_IDS.has(normalized)
+    || IRREVERSIBLE_ID_PATTERNS.some((pattern) => pattern.test(normalized));
+}
+
+function normalizeSurface(surface) {
+  return String(surface).trim().replace(/\\/g, "/").replace(/^\.\//, "").replace(/\/+/g, "/");
+}
+
+function surfaceOverlap(left, right) {
+  const a = normalizeSurface(left);
+  const b = normalizeSurface(right);
+  if (a === b) return true;
+
+  // Only infer parent/child overlap for path-shaped ownership declarations.
+  // Semantic labels such as `policy` and `policy_result` remain independent.
+  const pathLike = (value) => value.includes("/") || value.endsWith("/**");
+  if (!pathLike(a) || !pathLike(b)) return false;
+  const prefix = (value) => value.replace(/\/\*\*$/, "/").replace(/\/$/, "") + "/";
+  return b.startsWith(prefix(a)) || a.startsWith(prefix(b));
+}
 
 function lintGraph(graph) {
   const errors = [];
@@ -79,11 +115,14 @@ function lintGraph(graph) {
     if (node.verifies !== undefined && !Array.isArray(node.verifies)) {
       errors.push(`${node.id}: verifies must be an array when present`);
     }
+    if (node.irreversible !== undefined && typeof node.irreversible !== "boolean") {
+      errors.push(`${node.id}: irreversible must be a boolean when present`);
+    }
     if (!node.doneWhen || String(node.doneWhen).trim().length < 8) {
       errors.push(`${node.id}: missing doneWhen verifier`);
     }
     if (!CLOSERS.has(node.closer)) errors.push(`${node.id}: closer must be model|human|policy|script`);
-    const forced = node.irreversible === true || IRREVERSIBLE_IDS.has(node.id);
+    const forced = node.irreversible === true || inferredIrreversibleId(node.id);
     if (forced && node.closer === "model") {
       errors.push(`${node.id}: irreversible edge cannot be closed by the model`);
     }
@@ -111,24 +150,24 @@ function lintGraph(graph) {
   }
 
   const ancestors = dependencyAncestors(nodesById);
-  const ownership = new Map();
+  const ownedSurfaces = [];
   for (const node of nodesById.values()) {
     for (const surface of Array.isArray(node.owns) ? node.owns : []) {
-      if (typeof surface !== "string" || !surface.trim()) continue;
-      const owners = ownership.get(surface) || [];
-      owners.push(node.id);
-      ownership.set(surface, owners);
+      if (typeof surface === "string" && surface.trim()) {
+        ownedSurfaces.push({ nodeId: node.id, surface });
+      }
     }
   }
-  for (const [surface, owners] of ownership) {
-    for (let left = 0; left < owners.length; left += 1) {
-      for (let right = left + 1; right < owners.length; right += 1) {
-        const a = owners[left];
-        const b = owners[right];
-        const ordered = ancestors.get(a)?.has(b) || ancestors.get(b)?.has(a);
-        if (!ordered) {
-          errors.push(`parallel ownership conflict: ${a} and ${b} both own ${surface}`);
-        }
+  for (let left = 0; left < ownedSurfaces.length; left += 1) {
+    for (let right = left + 1; right < ownedSurfaces.length; right += 1) {
+      const a = ownedSurfaces[left];
+      const b = ownedSurfaces[right];
+      if (a.nodeId === b.nodeId || !surfaceOverlap(a.surface, b.surface)) continue;
+      const ordered = ancestors.get(a.nodeId)?.has(b.nodeId) || ancestors.get(b.nodeId)?.has(a.nodeId);
+      if (!ordered) {
+        errors.push(
+          `parallel ownership conflict: ${a.nodeId} owns ${a.surface}; ${b.nodeId} owns ${b.surface}`
+        );
       }
     }
   }
@@ -151,8 +190,10 @@ function lintGraph(graph) {
       if (!ancestors.get(node.id)?.has(targetId)) {
         errors.push(`${node.id}: verifier must depend on ${targetId}`);
       }
-      const targetOwns = new Set(Array.isArray(target.owns) ? target.owns : []);
-      const overlap = (Array.isArray(node.owns) ? node.owns : []).filter((surface) => targetOwns.has(surface));
+      const targetOwns = Array.isArray(target.owns) ? target.owns : [];
+      const overlap = (Array.isArray(node.owns) ? node.owns : []).filter((surface) =>
+        targetOwns.some((targetSurface) => surfaceOverlap(surface, targetSurface))
+      );
       if (overlap.length) {
         errors.push(`${node.id}: verifier owns producer surface(s): ${overlap.join(", ")}`);
       }
@@ -162,7 +203,15 @@ function lintGraph(graph) {
   if (graph.loops !== undefined && !Array.isArray(graph.loops)) {
     errors.push("loops must be an array");
   }
+  const loopIds = new Set();
   for (const loop of Array.isArray(graph.loops) ? graph.loops : []) {
+    if (!loop.id || typeof loop.id !== "string") {
+      errors.push("loop missing id");
+    } else if (loopIds.has(loop.id)) {
+      errors.push(`duplicate loop ${loop.id}`);
+    } else {
+      loopIds.add(loop.id);
+    }
     if (!(Number.isInteger(loop.maxAttempts) && loop.maxAttempts > 0)) {
       errors.push(`${loop.id || "loop"}: maxAttempts required`);
     }
@@ -177,6 +226,15 @@ function lintGraph(graph) {
     }
     if (Array.isArray(loop.restarts) && loop.restarts.length) {
       errors.push(`${loop.id || "loop"}: inner loops must not restart outer nodes (${loop.restarts.join(", ")})`);
+    }
+
+    const hasIndependentVerifier = [...loopNodes].some((id) => {
+      const node = nodesById.get(id);
+      if (!node || node.closer === "model" || !Array.isArray(node.verifies)) return false;
+      return node.verifies.some((targetId) => loopNodes.has(targetId));
+    });
+    if (loopNodes.size && !hasIndependentVerifier) {
+      errors.push(`${loop.id || "loop"}: loop needs a non-model verifier with verifies[] targeting a loop node`);
     }
   }
 
@@ -273,4 +331,11 @@ if (require.main === module) {
   console.log(`PASS ${file}`);
 }
 
-module.exports = { lintGraph, loadAndLint, IRREVERSIBLE_IDS };
+module.exports = {
+  lintGraph,
+  loadAndLint,
+  IRREVERSIBLE_IDS,
+  IRREVERSIBLE_ID_PATTERNS,
+  inferredIrreversibleId,
+  surfaceOverlap,
+};
