@@ -56,6 +56,44 @@ test("model cannot close accept", () => {
   assert.ok(errors.some((e) => /irreversible/.test(e)));
 });
 
+test("compound irreversible ids cannot hide behind a model closer", () => {
+  for (const id of [
+    "release-payout",
+    "place-order",
+    "send-email",
+    "approve_transfer",
+    "store-memory",
+    "deploy-production",
+  ]) {
+    const errors = lintGraph({
+      name: `compound-${id}`,
+      goal: "Reject consequential compound node identifiers owned by a model.",
+      stop: { maxUsd: 1 },
+      nodes: [{ id, dependsOn: [], owns: [], closer: "model", doneWhen: "action completed" }],
+    });
+    assert.ok(errors.some((error) => /irreversible/.test(error)), `${id} should fail`);
+  }
+});
+
+test("irreversible declaration must be boolean when present", () => {
+  const errors = lintGraph({
+    name: "typed-authority",
+    goal: "Reject truthy strings that only look like authority declarations.",
+    stop: { maxUsd: 1 },
+    nodes: [
+      {
+        id: "draft",
+        dependsOn: [],
+        owns: ["draft"],
+        closer: "model",
+        irreversible: "false",
+        doneWhen: "draft exists",
+      },
+    ],
+  });
+  assert.ok(errors.some((error) => /irreversible must be a boolean/.test(error)));
+});
+
 test("missing verifier fails", () => {
   const errors = lintGraph({
     name: "thin",
@@ -78,6 +116,44 @@ test("inner loop cannot restart intake", () => {
     loops: [{ id: "inner", nodes: ["draft"], maxAttempts: 2, restarts: ["intake"] }],
   });
   assert.ok(errors.some((e) => /must not restart/.test(e)));
+});
+
+test("a retry loop needs an independent declared verifier", () => {
+  const errors = lintGraph({
+    name: "self-closing-loop",
+    goal: "Reject a retry loop in which the model is its own verifier.",
+    stop: { noProgressSteps: 2 },
+    nodes: [
+      { id: "draft", dependsOn: [], owns: ["draft"], closer: "model", doneWhen: "draft exists" },
+      { id: "revise", dependsOn: ["draft"], owns: ["draft"], closer: "model", doneWhen: "revision exists" },
+    ],
+    loops: [{ id: "retry", nodes: ["draft", "revise"], maxAttempts: 2, restarts: [] }],
+  });
+  assert.ok(errors.some((error) => /non-model verifier/.test(error)));
+});
+
+test("loop ids are required and unique", () => {
+  const errors = lintGraph({
+    name: "loop-identities",
+    goal: "Reject ambiguous retry loops with duplicate identifiers.",
+    stop: { noProgressSteps: 2 },
+    nodes: [
+      { id: "draft", dependsOn: [], owns: ["draft"], closer: "model", doneWhen: "draft exists" },
+      {
+        id: "verify",
+        dependsOn: ["draft"],
+        owns: ["report"],
+        verifies: ["draft"],
+        closer: "script",
+        doneWhen: "report passes",
+      },
+    ],
+    loops: [
+      { id: "retry", nodes: ["draft", "verify"], maxAttempts: 2, restarts: [] },
+      { id: "retry", nodes: ["draft", "verify"], maxAttempts: 2, restarts: [] },
+    ],
+  });
+  assert.ok(errors.some((error) => /duplicate loop retry/.test(error)));
 });
 
 test("dependency cycles fail", () => {
@@ -103,6 +179,20 @@ test("parallel nodes cannot own the same mutable surface", () => {
       { id: "intake", dependsOn: [], owns: ["brief"], closer: "script", doneWhen: "brief parsed" },
       { id: "left", dependsOn: ["intake"], owns: ["src/shared.js"], closer: "model", doneWhen: "left draft exists" },
       { id: "right", dependsOn: ["intake"], owns: ["src/shared.js"], closer: "model", doneWhen: "right draft exists" },
+    ],
+  });
+  assert.ok(errors.some((error) => /parallel ownership conflict/.test(error)));
+});
+
+test("parallel parent and child path ownership conflicts", () => {
+  const errors = lintGraph({
+    name: "path-conflict",
+    goal: "Detect parallel workers whose path ownership declarations overlap.",
+    stop: { noProgressSteps: 2 },
+    nodes: [
+      { id: "intake", dependsOn: [], owns: ["brief"], closer: "script", doneWhen: "brief parsed" },
+      { id: "left", dependsOn: ["intake"], owns: ["src/"], closer: "model", doneWhen: "left draft exists" },
+      { id: "right", dependsOn: ["intake"], owns: ["src/core.js"], closer: "model", doneWhen: "right draft exists" },
     ],
   });
   assert.ok(errors.some((error) => /parallel ownership conflict/.test(error)));
