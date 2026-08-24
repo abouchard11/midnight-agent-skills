@@ -35,6 +35,7 @@
       "id": "verify",
       "dependsOn": ["implement"],
       "owns": [],
+      "verifies": ["implement"],
       "closer": "script",
       "irreversible": false,
       "doneWhen": "Verifier returns CLEAN_PASS"
