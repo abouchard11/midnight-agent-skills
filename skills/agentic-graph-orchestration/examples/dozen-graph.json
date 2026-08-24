@@ -67,6 +67,7 @@
       "id": "verify",
       "dependsOn": ["draft"],
       "owns": ["verifiers"],
+      "verifies": ["draft"],
       "closer": "script",
       "irreversible": false,
       "doneWhen": "FTC disclosure + must-say + avoid"
@@ -93,7 +94,7 @@
       "owns": ["live_urls"],
       "closer": "human",
       "irreversible": true,
-      "doneWhen": "Disclosure still present on every accepted slot"
+      "doneWhen": "Live TikTok or Instagram URL plus disclosure on every accepted slot"
     },
     {
       "id": "measure",
