@@ -224,8 +224,19 @@ function lintGraph(graph) {
       loopNodes.add(id);
       if (!ids.has(id)) errors.push(`${loop.id || "loop"}: unknown node ${id}`);
     }
-    if (Array.isArray(loop.restarts) && loop.restarts.length) {
-      errors.push(`${loop.id || "loop"}: inner loops must not restart outer nodes (${loop.restarts.join(", ")})`);
+    if (loop.restarts !== undefined && !Array.isArray(loop.restarts)) {
+      errors.push(`${loop.id || "loop"}: restarts must be an array when present`);
+    }
+    // Restarting a node the loop owns is the whole point of a retry loop, so it
+    // must stay declarable. Only a restart reaching outside loop.nodes re-runs
+    // work this loop does not own -- that is the "restart intake because one
+    // caption failed" failure the rule exists to catch.
+    for (const id of Array.isArray(loop.restarts) ? loop.restarts : []) {
+      if (!ids.has(id)) {
+        errors.push(`${loop.id || "loop"}: restarts unknown node ${id}`);
+      } else if (!loopNodes.has(id)) {
+        errors.push(`${loop.id || "loop"}: inner loops must not restart outer nodes (${id})`);
+      }
     }
 
     const hasIndependentVerifier = [...loopNodes].some((id) => {

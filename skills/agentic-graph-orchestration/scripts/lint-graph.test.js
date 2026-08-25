@@ -248,3 +248,66 @@ test("duplicate dependencies and disconnected cycle components fail", () => {
   assert.ok(errors.some((error) => /x: unreachable/.test(error)));
   assert.ok(errors.some((error) => /y: unreachable/.test(error)));
 });
+
+test("a loop may restart its own nodes — that is what a retry loop is", () => {
+  const errors = lintGraph({
+    name: "in-loop-restart",
+    goal: "Retry the implement node until its independent verifier passes.",
+    stop: { noProgressSteps: 3 },
+    nodes: [
+      { id: "implement", dependsOn: [], owns: ["src/thing.js"], closer: "model", doneWhen: "the change is written" },
+      {
+        id: "verify",
+        dependsOn: ["implement"],
+        owns: [],
+        closer: "script",
+        verifies: ["implement"],
+        doneWhen: "the test suite passes",
+      },
+    ],
+    loops: [{ id: "impl", nodes: ["implement", "verify"], maxAttempts: 3, restarts: ["implement"] }],
+  });
+  assert.deepEqual(errors, []);
+});
+
+test("restarts must name a known node", () => {
+  const errors = lintGraph({
+    name: "restart-ghost",
+    goal: "Reject a retry loop that restarts a node which does not exist.",
+    stop: { noProgressSteps: 3 },
+    nodes: [
+      { id: "implement", dependsOn: [], owns: ["src/thing.js"], closer: "model", doneWhen: "the change is written" },
+      {
+        id: "verify",
+        dependsOn: ["implement"],
+        owns: [],
+        closer: "script",
+        verifies: ["implement"],
+        doneWhen: "the test suite passes",
+      },
+    ],
+    loops: [{ id: "impl", nodes: ["implement", "verify"], maxAttempts: 3, restarts: ["ghost"] }],
+  });
+  assert.ok(errors.some((e) => /restarts unknown node ghost/.test(e)));
+});
+
+test("restarts must be an array when present", () => {
+  const errors = lintGraph({
+    name: "restart-shape",
+    goal: "Reject a retry loop whose restarts field is not a list.",
+    stop: { noProgressSteps: 3 },
+    nodes: [
+      { id: "implement", dependsOn: [], owns: ["src/thing.js"], closer: "model", doneWhen: "the change is written" },
+      {
+        id: "verify",
+        dependsOn: ["implement"],
+        owns: [],
+        closer: "script",
+        verifies: ["implement"],
+        doneWhen: "the test suite passes",
+      },
+    ],
+    loops: [{ id: "impl", nodes: ["implement", "verify"], maxAttempts: 3, restarts: "implement" }],
+  });
+  assert.ok(errors.some((e) => /restarts must be an array/.test(e)));
+});
