@@ -1,8 +1,9 @@
 /**
- * Script-held orchestration skeleton.
- * The script owns the loop and intermediate state; agents do the work.
- * Irreversible nodes must be closed by a human or a policy, not by the model.
+ * Script-held orchestration.
+ * Prefer `run-graph.js`. This file re-exports the runtime and keeps the
+ * original sequential helper for older callers.
  */
+const runtime = require("./run-graph.js");
 
 async function runGraph(nodes, order, hooks = {}) {
   const state = {};
@@ -38,4 +39,4 @@ async function runVerifier() {
   return { pass: true, reason: "ok" };
 }
 
-module.exports = { runGraph, runVerifier };
+module.exports = { runGraph, runVerifier, ...runtime };
