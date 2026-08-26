@@ -12,6 +12,20 @@ Drop `SKILL.md` into Claude Code, Codex, or Grok skills. The agent is then requi
 
 This repo is **private** on purpose. Do not flip it public until the cookbook and the clickable demo are both sharper than a blog post.
 
+## Stack
+
+```
+agentic-graph-orchestration     ← canonical work topology + linter (source of truth)
+        ↑ mirrored into
+midnight-agent-skills           ← THIS REPO: packaging pair (work + memory closer)
+        ↑ consumed by
+midnight-reasoning              ← reflection / critic library
+        ↑ consumed by
+hermes-command-center           ← operator UI + run state
+```
+
+Ownership is directed. This copy mirrors the canonical repo above — fix drift there, then re-sync here. Downstream consumers read it; they do not edit it from product work.
+
 ## Install
 
 ```sh
@@ -24,8 +38,11 @@ Or clone this repo into your project's `.claude/skills/` or `.grok/skills/`.
 
 ```sh
 node scripts/lint-graph.js examples/dozen-graph.json
-node --test scripts/lint-graph.test.js
+node --test scripts/lint-graph.test.js scripts/run-graph.test.js
+node scripts/run-graph.js examples/coding-loop.json
 ```
+
+`run-graph.js` is the runtime. It lints, ticks ready nodes, retries only the declared inner loop, and **halts** on human/policy nodes. The model cannot close accept, post, pay, merge, or remember.
 
 ## What is novel, and what is not
 
@@ -73,7 +90,8 @@ examples/dozen-graph.md      # live product topology
 examples/dozen-graph.json    # linted machine spec
 examples/coding-loop.md      # smaller coding-agent topology
 scripts/lint-graph.js        # fail a graph that cheats
-scripts/graph-template.js    # script-held orchestration skeleton
+scripts/run-graph.js         # script-held runtime: lint, tick, human/policy gates
+scripts/graph-template.js    # re-exports the runtime
 companions/gbrain/           # GBrain companion: model does not own remember
 ```
 
@@ -85,6 +103,16 @@ companions/gbrain/           # GBrain companion: model does not own remember
 node scripts/lint-graph.js companions/gbrain/examples/memory-loop.json
 ```
 
-## License
+## Rights
 
-MIT. Copyright (c) 2026 Alex Bouchard. See `LICENSE`.
+**Proprietary — all rights reserved. No license is granted.** See [LICENSE](LICENSE).
+
+## Related
+
+- [midnight-agent-skills](https://github.com/abouchard11/midnight-agent-skills) — this skill plus the GBrain companion as a drop-in pair (private)
+- [midnight-reasoning](https://github.com/abouchard11/midnight-reasoning) — cross-run reflection / critic library (private)
+- [hermes-command-center](https://github.com/abouchard11/hermes-command-center) — operator UI that consumes this stack (private)
+- [dozen](https://github.com/abouchard11/dozen) — reference product graph (private)
+- [graphiti-neo4j-ops](https://github.com/abouchard11/graphiti-neo4j-ops) — Graphiti store the memory companion treats as canonical
+- [llm-safety-gate](https://github.com/abouchard11/llm-safety-gate) — fail-closed safety node
+- [yapoleons-court](https://github.com/abouchard11/yapoleons-court) — shipped game where the model cannot own the score

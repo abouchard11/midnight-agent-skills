@@ -5,6 +5,6 @@
   "license": "UNLICENSED",
   "author": "Alex Bouchard",
   "scripts": {
-    "test": "node skills/agentic-graph-orchestration/scripts/lint-graph.test.js && python3 skills/gbrain-graph-companion/scripts/lint-note.test.py"
+    "test": "node --test skills/agentic-graph-orchestration/scripts/lint-graph.test.js skills/agentic-graph-orchestration/scripts/run-graph.test.js && python3 skills/gbrain-graph-companion/scripts/lint-note.test.py"
   }
 }
