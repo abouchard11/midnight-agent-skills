@@ -3,7 +3,9 @@
 This repo is a skill, not an app.
 
 - Load `SKILL.md` first. Open `references/` only when the job needs depth.
-- Before implementing a graph, write JSON and run `node scripts/lint-graph.js`.
+- Before implementing a graph, write JSON and run `node scripts/lint.js`.
+- `scripts/lint.js` runs the hash sentinel on `lint-graph.js` before it lints. Exit 1 means the running file is not the canonical gate. Do not copy files to "fix" it.
+- Before trusting an installed copy (Hermes `.grok`, midnight-agent-skills mirror, `~/.claude` backburner), run `node scripts/check-sentinel.js --candidate PATH`.
 - Irreversible nodes (`accept`, `post`, `pay`, `publish`, `merge`, `safety`, `remember`, `forget`) cannot have `closer: model`.
 - Inner loops must set `restarts: []`. A failed caption does not restart intake.
 - Memory: load `companions/gbrain/SKILL.md`. Do not substitute GBrain for Graphiti.

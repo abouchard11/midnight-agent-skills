@@ -15,16 +15,16 @@ This repo is **private** on purpose. Do not flip it public until the cookbook an
 ## Stack
 
 ```
-agentic-graph-orchestration     ← canonical work topology + linter (source of truth)
-        ↑ mirrored into
-midnight-agent-skills           ← THIS REPO: packaging pair (work + memory closer)
+agentic-graph-orchestration     ← THIS REPO: canonical work topology + linter
+        ↑ consumed by
+midnight-agent-skills           ← packaging pair (work + memory closer)
         ↑ consumed by
 midnight-reasoning              ← reflection / critic library
         ↑ consumed by
 hermes-command-center           ← operator UI + run state
 ```
 
-Ownership is directed. This copy mirrors the canonical repo above — fix drift there, then re-sync here. Downstream consumers read it; they do not edit it from product work.
+Ownership is directed. This repo is a source of truth. Downstream consumers read it; they do not edit it from product work.
 
 ## Install
 

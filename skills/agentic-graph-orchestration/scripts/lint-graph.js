@@ -19,6 +19,11 @@ const IRREVERSIBLE_IDS = new Set([
   "remember",
   "forget",
   "persist",
+  "ban",
+  "enforce",
+  "clawback",
+  "revoke",
+  "disqualify",
 ]);
 
 // Node ids are prose, so exact-name checks are too easy to evade accidentally.
@@ -26,12 +31,17 @@ const IRREVERSIBLE_IDS = new Set([
 // compounds, while leaving ambiguous implementation verbs (build, write, run)
 // to the explicit `irreversible: true` declaration.
 const IRREVERSIBLE_ID_PATTERNS = [
-  /^(?:accept|post|pay|publish|transfer|delete|merge|deploy|remember|forget|persist)(?:[-_:]|$)/,
+  /^(?:accept|post|pay|publish|transfer|delete|merge|deploy|remember|forget|persist|ban|enforce|clawback|revoke|disqualify)(?:[-_:]|$)/,
   /^(?:release|issue|trigger)[-_:](?:payout|payment|refund)(?:[-_:]|$)/,
   /^(?:place|submit|execute|cancel)[-_:](?:order|trade)(?:[-_:]|$)/,
   /^send[-_:](?:email|message|notification)(?:[-_:]|$)/,
   /^(?:store|write)[-_:](?:memory|brain|ledger|database|db)(?:[-_:]|$)/,
   /^approve[-_:](?:transfer|payment|payout|refund|order|trade|publish|post|deploy|merge)(?:[-_:]|$)/,
+  // Enforcement graphs: suspending or freezing a person's account, funds, or
+  // eligibility is a consequence even when the verb alone is just scheduling.
+  // Bare `suspend`, `freeze`, and `hold` stay with the explicit declaration —
+  // a hold is the designed-reversible action this family of graphs relies on.
+  /^(?:suspend|freeze|withhold)[-_:](?:account|user|member|entrant|entry|payout|prize|eligibility|funds)(?:[-_:]|$)/,
 ];
 
 const CLOSERS = new Set(["model", "human", "policy", "script"]);

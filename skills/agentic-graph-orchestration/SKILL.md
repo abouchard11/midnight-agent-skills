@@ -57,7 +57,7 @@ Rules:
 - For independent checker nodes, declare `verifies: [producerNodeId]` and give the checker no overlapping owned surface.
 - Every retry loop must contain at least one non-model checker whose `verifies` targets a producer inside that loop.
 
-Then encode the table as JSON and run `node scripts/lint-graph.js <file>`. A graph that cannot pass the linter is not ready to implement.
+Then encode the table as JSON and run `node scripts/lint.js <file>`. That entry runs the hash sentinel on `lint-graph.js` before it lints. A graph that cannot pass the linter is not ready to implement.
 
 ### 3. Implement the closed loop
 
@@ -113,11 +113,14 @@ A second, smaller topology lives in `examples/coding-loop.json` (plan → implem
 ## Lint before you ship
 
 ```sh
-node scripts/lint-graph.js examples/dozen-graph.json
-node scripts/lint-graph.js examples/coding-loop.json
-node scripts/lint-graph.js companions/gbrain/examples/memory-loop.json
+node scripts/check-sentinel.js
+node scripts/lint.js examples/dozen-graph.json
+node scripts/lint.js examples/coding-loop.json
+node scripts/lint.js companions/gbrain/examples/memory-loop.json
 node --test scripts/lint-graph.test.js
 ```
+
+`scripts/lint.js` refuses to run if `scripts/lint-graph.js` is not the canonical hash. A drifted install is repaired with `node scripts/sync-gates.js --to <install>` — a deliberate, committed release step (the checker itself never copies, and nothing repairs automatically on drift).
 
 The linter fails a graph that is missing a verifier, stop condition, or closer; lets the model own an irreversible edge (including clear compound actions such as `release-payout`, `place-order`, or `send-email`); mistypes an `irreversible` declaration; contains dependency cycles or unreachable cycle components; assigns overlapping path surfaces to unordered parallel nodes; duplicates a loop id; omits an independent verifier from a retry loop; or declares a self-verifying or ownership-conflicted verifier.
 

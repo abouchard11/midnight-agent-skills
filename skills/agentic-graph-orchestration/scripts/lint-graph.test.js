@@ -75,6 +75,46 @@ test("compound irreversible ids cannot hide behind a model closer", () => {
   }
 });
 
+test("enforcement verbs cannot hide behind a model closer", () => {
+  for (const id of [
+    "ban",
+    "ban-accounts",
+    "enforce",
+    "enforce_decision",
+    "clawback",
+    "clawback-votes",
+    "revoke-prize",
+    "disqualify-entry",
+    "suspend-account",
+    "freeze-funds",
+    "withhold-payout",
+  ]) {
+    const errors = lintGraph({
+      name: `enforcement-${id}`,
+      goal: "Reject enforcement-domain node identifiers owned by a model.",
+      stop: { maxUsd: 1 },
+      nodes: [{ id, dependsOn: [], owns: [], closer: "model", doneWhen: "action completed" }],
+    });
+    assert.ok(errors.some((error) => /irreversible/.test(error)), `${id} should fail`);
+  }
+});
+
+test("enforcement inference stays narrow — lookalikes and reversible verbs stay free", () => {
+  // `banner`/`enforcement`/`revoked` are prefixes, not the verbs themselves.
+  // Bare `suspend` and `hold` stay with the explicit flag: suspending a job is
+  // scheduling, and a hold is the designed-reversible action in enforcement
+  // graphs — inferring them would make the irreversible list lie.
+  for (const id of ["banner-rotation", "enforcement-report", "revoked-list", "suspend", "hold"]) {
+    const errors = lintGraph({
+      name: `benign-${id}`,
+      goal: "Keep unrelated identifiers free to use any closer they want.",
+      stop: { maxUsd: 1 },
+      nodes: [{ id, dependsOn: [], owns: [], closer: "model", doneWhen: "action completed" }],
+    });
+    assert.deepEqual(errors, [], `${id} should stay lintable with a model closer`);
+  }
+});
+
 test("irreversible declaration must be boolean when present", () => {
   const errors = lintGraph({
     name: "typed-authority",

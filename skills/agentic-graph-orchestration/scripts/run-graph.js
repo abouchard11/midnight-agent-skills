@@ -2,13 +2,13 @@
  * Script-held graph runtime.
  * Lint first. The script owns the loop. The model does not own irreversible edges.
  */
-const { lintGraph, IRREVERSIBLE_IDS } = require("./lint-graph.js");
+const { lintGraph, inferredIrreversibleId } = require("./lint-graph.js");
 
+// One inference, shared with the linter. A runtime with its own weaker copy
+// of this rule is a gate that drifts.
 function isIrreversible(node) {
   if (node.irreversible === true) return true;
-  const id = String(node.id || "").toLowerCase();
-  if (IRREVERSIBLE_IDS && IRREVERSIBLE_IDS.has(id)) return true;
-  return /^(accept|post|pay|publish|transfer|delete|merge|deploy|remember|forget|persist)(?:[-_:]|$)/.test(id);
+  return inferredIrreversibleId(node.id);
 }
 
 function startRun(graph, now = Date.now()) {

@@ -7,7 +7,8 @@
  * is a dashboard. This file is the gate: a drifted copy must not
  * be allowed to say PASS.
  *
- * The model does not own repair. This script never copies files.
+ * This checker never copies files. Repair is scripts/sync-gates.js — a
+ * deliberate, committed release step, never an automatic reaction to drift.
  */
 
 const crypto = require("node:crypto");
@@ -256,7 +257,7 @@ function main(argv) {
   else process.stdout.write(`${formatReport(report)}\n`);
   if (!report.ok) {
     process.stderr.write(
-      "refusing to treat this install as a gate. copy is a human action.\n"
+      "refusing to treat this install as a gate. repair deliberately: node scripts/sync-gates.js --to <install>\n"
     );
     return 1;
   }

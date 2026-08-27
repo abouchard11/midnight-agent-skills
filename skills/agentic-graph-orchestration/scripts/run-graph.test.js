@@ -2,7 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { startRun, tick, closeNode, drive } = require("./run-graph.js");
+const { startRun, tick, closeNode, drive, isIrreversible } = require("./run-graph.js");
 
 const coding = JSON.parse(
   fs.readFileSync(path.join(__dirname, "../examples/coding-loop.json"), "utf8"),
@@ -103,6 +103,23 @@ test("dozen safety then accept stay open — model handlers cannot close them", 
   assert.equal(run.status.accept, "gate");
   assert.equal(run.finished, false);
   assert.throws(() => closeNode(run, "accept", { closer: "model" }), /requires closer human/);
+});
+
+test("runtime irreversibility matches the linter — compounds included", () => {
+  for (const id of [
+    "release-payout",
+    "place-order",
+    "send-email",
+    "approve_transfer",
+    "ban-accounts",
+    "enforce",
+    "clawback-votes",
+  ]) {
+    assert.equal(isIrreversible({ id }), true, `${id} should be irreversible at runtime`);
+  }
+  for (const id of ["banner-rotation", "enforcement-report", "draft", "hold"]) {
+    assert.equal(isIrreversible({ id }), false, `${id} should stay reversible at runtime`);
+  }
 });
 
 function driveTick(run, opts) {
