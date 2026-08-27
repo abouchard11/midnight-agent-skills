@@ -4,9 +4,9 @@ This repo is a skill, not an app.
 
 - Load `SKILL.md` first. Open `references/` only when the job needs depth.
 - Before implementing a graph, write JSON and run `node scripts/lint.js`.
-- `scripts/lint.js` runs the hash sentinel on `lint-graph.js` before it lints. Exit 1 means the running file is not the canonical gate. Do not copy files to "fix" it.
-- Before trusting an installed copy (Hermes `.grok`, midnight-agent-skills mirror, `~/.claude` backburner), run `node scripts/check-sentinel.js --candidate PATH`.
-- Irreversible nodes (`accept`, `post`, `pay`, `publish`, `merge`, `safety`, `remember`, `forget`) cannot have `closer: model`.
+- `scripts/lint.js` runs the hash sentinel on `lint-graph.js` before it lints. Exit 1 means the running file is not the canonical gate. Repair with `node scripts/sync-gates.js --to <install>` — a deliberate, committed step; never an automatic reaction to drift, and never a hand copy.
+- Before trusting an installed copy (Hermes `.grok` — git-tracked in Grok's repo, coordinate before syncing; midnight-agent-skills mirror), run `node scripts/check-sentinel.js --candidate PATH`.
+- Irreversible nodes cannot have `closer: model`. The inferred set lives in `lint-graph.js` (`IRREVERSIBLE_IDS` + `IRREVERSIBLE_ID_PATTERNS`) and includes enforcement verbs (`ban`, `enforce`, `clawback`, `revoke`, `disqualify`) since 2026-08-27 — read the source, not a stale list here.
 - Inner loops must set `restarts: []`. A failed caption does not restart intake.
 - Memory: load `companions/gbrain/SKILL.md`. Do not substitute GBrain for Graphiti.
 - Keep the repo private until a human says otherwise.

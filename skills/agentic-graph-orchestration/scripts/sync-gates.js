@@ -13,7 +13,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { checkSentinel, formatReport } = require("./check-sentinel");
 
-const EXCLUDE = new Set([".git", "node_modules", ".DS_Store"]);
+const EXCLUDE = new Set([".git", "node_modules", ".DS_Store", ".planning"]);
 
 function syncTree(fromRoot, toRoot) {
   const copied = [];
