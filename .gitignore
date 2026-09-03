@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+
+# archify visual-check byproducts — regenerated on every render, not deliverables
+diagrams/*.visual-check.*

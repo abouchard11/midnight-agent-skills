@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Midnight Agent Skills — Closed-Loop Work and Memory",
+    "output": "diagrams/suite.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "loop",
+        "label": "The closed loop",
+        "focus": [
+          "goal",
+          "topology",
+          "lint",
+          "loop",
+          "checker"
+        ],
+        "note": "The verifier is defined before any agent runs, and the graph must pass the linter first."
+      },
+      {
+        "id": "gates",
+        "label": "Who closes what",
+        "focus": [
+          "loop",
+          "close",
+          "open_edge"
+        ],
+        "note": "The model does not own accept, post, pay, or remember. Those edges stay open."
+      },
+      {
+        "id": "memory",
+        "label": "What survives the run",
+        "focus": [
+          "close",
+          "draft",
+          "remember"
+        ],
+        "note": "The model may draft a note. It may not own remember."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "intake",
+      "label": "Goal + Verifier"
+    },
+    {
+      "id": "graph",
+      "label": "Work Graph"
+    },
+    {
+      "id": "gate",
+      "label": "Closers"
+    },
+    {
+      "id": "open",
+      "label": "Irreversible Edges",
+      "variant": "exception"
+    },
+    {
+      "id": "memory",
+      "label": "Memory Closer"
+    }
+  ],
+  "phases": [
+    {
+      "id": "design",
+      "label": "Design",
+      "fromCol": 0,
+      "toCol": 2
+    },
+    {
+      "id": "run",
+      "label": "Run + verify",
+      "fromCol": 3,
+      "toCol": 4,
+      "variant": "emphasis"
+    },
+    {
+      "id": "persist",
+      "label": "Persist",
+      "fromCol": 5,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "goal",
+    "topology",
+    "lint",
+    "loop",
+    "close",
+    "draft",
+    "remember"
+  ],
+  "nodes": [
+    {
+      "id": "goal",
+      "lane": "intake",
+      "col": 0,
+      "type": "frontend",
+      "label": "Goal",
+      "sublabel": "verifier",
+      "width": 68
+    },
+    {
+      "id": "topology",
+      "lane": "graph",
+      "col": 0,
+      "type": "backend",
+      "label": "Topology",
+      "sublabel": "owners",
+      "width": 68
+    },
+    {
+      "id": "lint",
+      "lane": "graph",
+      "col": 2,
+      "type": "security",
+      "label": "Linter",
+      "sublabel": "sentinel",
+      "tag": "blocking",
+      "width": 68
+    },
+    {
+      "id": "loop",
+      "lane": "graph",
+      "col": 3,
+      "type": "backend",
+      "label": "Loop",
+      "sublabel": "doer+judge",
+      "width": 68
+    },
+    {
+      "id": "checker",
+      "lane": "gate",
+      "col": 3,
+      "type": "security",
+      "label": "Checker",
+      "sublabel": "non-model",
+      "width": 60
+    },
+    {
+      "id": "close",
+      "lane": "gate",
+      "col": 4,
+      "type": "security",
+      "label": "Closer",
+      "sublabel": "human",
+      "tag": "not model",
+      "width": 60
+    },
+    {
+      "id": "open_edge",
+      "lane": "open",
+      "col": 5,
+      "type": "messagebus",
+      "label": "Open Edge",
+      "sublabel": "pay+post",
+      "tag": "stays open",
+      "width": 68
+    },
+    {
+      "id": "draft",
+      "lane": "memory",
+      "col": 4,
+      "type": "backend",
+      "label": "Draft",
+      "sublabel": "model",
+      "width": 68
+    },
+    {
+      "id": "remember",
+      "lane": "memory",
+      "col": 5,
+      "type": "security",
+      "label": "remember",
+      "sublabel": "human",
+      "tag": "irreversible",
+      "width": 68
+    }
+  ],
+  "edges": [
+    {
+      "from": "goal",
+      "to": "topology",
+      "route": "drop",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "from": "topology",
+      "to": "lint"
+    },
+    {
+      "from": "lint",
+      "to": "loop",
+      "variant": "emphasis"
+    },
+    {
+      "from": "loop",
+      "to": "checker",
+      "route": "drop",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "from": "checker",
+      "to": "loop",
+      "label": "keep or revert",
+      "variant": "dashed",
+      "role": "return",
+      "route": "return-left",
+      "fromSide": "left",
+      "toSide": "left"
+    },
+    {
+      "from": "loop",
+      "to": "close",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "from": "close",
+      "to": "draft",
+      "label": "verified only",
+      "route": "drop",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "from": "draft",
+      "to": "remember",
+      "variant": "emphasis"
+    },
+    {
+      "from": "close",
+      "to": "open_edge",
+      "label": "refused",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "The Hard Rule",
+      "items": [
+        "The model does not own accept, post, pay, or remember",
+        "Irreversible edges stay running until a human, a policy, or an independent verifier closes them"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Closed Loop",
+      "items": [
+        "The verifier is defined before any agent runs",
+        "A graph that cannot pass the linter is not ready to implement",
+        "Verified increments persist to Graphiti, GBrain, and MEMORY.md"
+      ]
+    }
+  ]
+}
