@@ -10,8 +10,6 @@ Drop `SKILL.md` into Claude Code, Codex, or Grok skills. The agent is then requi
 4. Never let the model own irreversible gates (accept, post, pay, publish, safety).
 5. Lint the graph JSON. A graph that fails the linter is not ready to implement.
 
-This repo is **private** on purpose. Do not flip it public until the cookbook and the clickable demo are both sharper than a blog post.
-
 ## Stack
 
 ```

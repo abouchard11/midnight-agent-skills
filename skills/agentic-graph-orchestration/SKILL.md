@@ -122,6 +122,35 @@ node --test scripts/lint-graph.test.js
 
 `scripts/lint.js` refuses to run if `scripts/lint-graph.js` is not the canonical hash. A drifted install is repaired with `node scripts/sync-gates.js --to <install>` — a deliberate, committed release step (the checker itself never copies, and nothing repairs automatically on drift).
 
+### A PASS is only as strong as the gate that issued it
+
+Drift is **per copy**, and it is silent: a stale install still runs, still
+prints `PASS`, and still looks authoritative. On 2026-09-27 all six Hermes
+installs of this skill — the default profile plus all five Caduceus seat
+profiles — were running a **102-line `lint-graph.js` against canonical's 363**,
+with `run-graph.js` and `lint-note.py` absent entirely. A graph canonical
+*rejects* (`loop needs a non-model verifier with verifies[] targeting a loop
+node`) passed the degraded copy, and that `PASS` was reported to the operator
+as proof. The three git-tracked mirrors were IN-SYNC; only the installs had
+rotted.
+
+So:
+
+- **Confirm which binary produced a verdict before citing it as evidence.**
+  `node scripts/check-sentinel.js --candidate <install>` is read-only — run it
+  liberally, and sweep *every* install rather than only the one that bit you.
+- **Repair from canonical with `sync-gates.js --to <install> --prune`.** Never
+  hand-copy a file to make a test pass, and never reconstruct a missing fixture
+  to silence a failure — a fabricated fixture proves nothing about the real
+  contract, and it hides the drift that caused the failure.
+- **The sentinel guards the gate scripts, not the prose.** It hashes
+  `lint-graph.js`, `run-graph.js`, and `lint-note.py`; editing `SKILL.md` in an
+  install trips nothing. Content changes belong upstream in canonical, then
+  `sync-gates` out — otherwise the install silently becomes the only copy of
+  the edit.
+- **`wc -l` reports one fewer line than the sentinel** (no trailing newline).
+  Trust the hash, not the count.
+
 The linter fails a graph that is missing a verifier, stop condition, or closer; lets the model own an irreversible edge (including clear compound actions such as `release-payout`, `place-order`, or `send-email`); mistypes an `irreversible` declaration; contains dependency cycles or unreachable cycle components; assigns overlapping path surfaces to unordered parallel nodes; duplicates a loop id; omits an independent verifier from a retry loop; or declares a self-verifying or ownership-conflicted verifier.
 
 ## Reference files
