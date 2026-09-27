@@ -63,6 +63,10 @@ Start at `references/INDEX.md`.
 
 | Symptom | Fix |
 |---|---|
+| `add_memory` fails via the MCP tool with `tool_call 'calls' is not valid JSON` | Do not retry the tool. The failure is in the argument path, not the server, and it hits short payloads too (seen at ~690 chars). POST the MCP protocol directly instead — see below |
+| Need to write when the MCP tool is unusable | `curl -X POST http://127.0.0.1:8000/mcp` with header `mcp-session-id` from an `initialize` call. **No trailing slash** — `/mcp/` returns 307 to `/mcp`. Sequence: `initialize` (read `mcp-session-id` from the response headers) → `notifications/initialized` → `tools/call add_memory` → `tools/call confirm_write` |
+| `add_memory` returned `status: spooled` | That is not saved. `confirm_write(receipt_id)` must return `status: landed` with an `episode_uuid`. A spooled receipt is a queue position, not a fact |
+| Wrote a `global` fact from the default profile | The default profile registers graphiti over HTTP; the council profiles still register it as a legacy STDIO server against `~/dev/graphiti/mcp_server`. Writes through those bypass receipts, which is why `get_status` reads `degraded` |
 | GBrain down / `gbrain doctor` fails | Skip persist. Do not invent a third store |
 | Fact is a person/company/episode | Graphiti with `group_id`. Pointer only in GBrain |
 | Want to dump the transcript | Refuse. One short learning page max |
@@ -75,6 +79,19 @@ Start at `references/INDEX.md`.
 - `lint-note.py` exit 0 before capture
 - After persist: slug or episode id, tier, verifier
 - After skip: one line saying why
+
+## When the tier rule and a human instruction collide
+
+The tier table says `observed` does not persist. If a human explicitly says to write
+anyway, **that human is the closer** — the table's own requirement for the persist step
+is `policy` or `human`, and an explicit instruction satisfies it. Write, but say plainly
+in the record and in the reply that the tier was below the persist bar and the human
+overrode it, so the provenance does not silently upgrade an `observed` fact to `verified`.
+
+Do not treat a human override as licence to skip the read-back: `confirm_write` returning
+`landed` plus an `episode_uuid`, then `get_episodes` showing it, then the group's
+`last write` moving in `~/.local/state/graphiti/briefs/_index.md`. Three independent
+read-backs, because a spooled receipt looks like success and is not.
 
 ## Retrospective (runs after every invocation)
 
