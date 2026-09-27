@@ -35,7 +35,29 @@ sensor:
     - [source 2]
   frequency: [how often to check]
   format: [data format]
+  validation:
+    - [check 1]
+    - [check 2]
+  on_validation_failure: [quarantine/alert/reject — never silently pass through]
 ```
+
+**The quality gate checks output. Validation checks input.** They are not the
+same gate, and a loop with only one of them is open on the other side. A false
+premise that enters at the sensor is carried cleanly through every downstream
+check — each layer validates the *shape* of what it received, not whether it
+corresponds to the world.
+
+Required input checks:
+- **Full-string match on identifiers.** Never filter or compare on a prefix or
+  truncation. A model name, id, or slug sliced to N characters silently drops
+  valid matches.
+- **Format before lookup.** Validate the token's format first, then query it. A
+  successful lookup does not retroactively validate a malformed source token.
+- **Bounds, schema, and completeness** on every inbound record.
+- **Provenance and freshness** — when was this true, and where did it come from?
+
+On failure: quarantine and alert. Do not drop silently (you lose the signal)
+and do not pass it through (you poison the loop).
 
 ### 2. Define the Policy Layer
 What rules govern the loop?
@@ -109,7 +131,37 @@ learning:
     - [action 2]
   skill_updates:
     - [what to update]
+  gate:
+    proposed_by: model          # the loop may DRAFT a change
+    applied_by: human|policy    # the loop may NOT apply it to itself
+    critic: [a different seat/model than the actor — self-grading is not a gate]
+    confidence_floor: 0.6       # below this, do not apply; log and surface
+    max_attempts: 3
+    no_progress_streak: 2       # >= 2 on the same step -> stop and surface
+    reversible: required        # VCS-tracked; an un-revertible learning is not a learning
 ```
+
+**The learning layer is an irreversible edge.** A loop that edits its own
+governing document has closed the only gate that could have caught it — the
+next run reads the edited rule as ground truth and no longer has access to the
+version it replaced. This is `persist`/`remember` under another name, and it
+gets the same treatment: the model drafts, a human or policy applies.
+
+Enforcement is not prose. A `skill_updates` action must be either:
+- a **human-closed node in a linted graph** — `agentic-graph-orchestration`'s
+  `lint-graph.js` fails any `irreversible: true` node whose `closer` is
+  `model`, and its `IRREVERSIBLE_IDS` already covers `remember`, `persist`,
+  `forget`; or
+- a **VCS-reviewed commit** to the skill file, so the change is attributable
+  and revertible.
+
+Note the limit honestly: that linter checks graph JSON, not skill files. An
+in-loop self-edit with no graph and no commit is caught by nothing but review.
+If your loop can write its own skills, that gap is your highest-value
+hardening target — close it with a hook, not a paragraph.
+
+Never: apply a learning because the loop felt confident, batch unreviewed
+self-edits, or treat "the run succeeded" as evidence the rule change was right.
 
 ### 6. Wire the Loop
 Connect the layers:
@@ -144,6 +196,8 @@ Track metrics:
 - Sources: [list]
 - Frequency: [how often]
 - Format: [data format]
+- Validation: [input checks — full-string identifier match, format-before-lookup, bounds/schema]
+- On validation failure: [quarantine/alert/reject]
 
 ## Policy Layer
 - Autonomous: [what it can do]
@@ -163,6 +217,8 @@ Track metrics:
 - On success: [what it learns]
 - On failure: [what it learns]
 - Skill updates: [what gets updated]
+- Gate: model drafts → [critic seat/model] reviews → [human/policy] applies
+- Reversible: [VCS path / rollback method]
 
 ## Metrics
 - Runs per day: [N]
@@ -178,8 +234,11 @@ Track metrics:
 
 - All five layers defined
 - Loop wired correctly
+- **Sensor validates input**, and validation failure quarantines rather than
+  passing through
 - Quality gate catches failures
-- Learning layer updates skills
+- **Learning layer's `skill_updates` is gated** — model drafts, human/policy
+  applies, and the applied change is revertible
 - Metrics tracked
 - Loop runs on schedule
 
@@ -190,6 +249,21 @@ Track metrics:
 - **Too much autonomy:** If the agent can do anything, it will do the wrong thing. Define clear policies.
 - **No monitoring:** If you don't track metrics, you don't know if it's working. Always monitor.
 - **Skipping the sensor:** If data doesn't flow in, nothing happens. Define clear sensors.
+- **Ungated self-modification:** A loop that writes its own skills removes the
+  only gate that could catch it, and launders the change as "learning." The
+  model drafts; a human or policy applies.
+- **No input validation:** The quality gate only sees output. A false premise
+  entering at the sensor passes every downstream shape check. Real case
+  (2026-09-27): a catalog probe filtered model names on a 12-character prefix,
+  so `gemini-3.6-flash` never matched `'flash'`; the loop concluded the model
+  did not exist and nearly wrote that falsehood into canonical memory. Only an
+  independent human-gated verifier caught it. Validate identifiers on the full
+  string.
+- **Self-grading critic:** If the critic is the same model instance that
+  produced the work, it is not a gate. Use a different seat or model.
+- **Confidence as a retry trigger:** An unsure critic must not force retries —
+  that burns budget without improving output. Below the confidence floor, log
+  and surface; do not loop.
 
 ## Example
 
@@ -203,6 +277,10 @@ Process inbox, triage by priority, draft responses, surface what matters.
 - Sources: Gmail API
 - Frequency: Every 15 minutes
 - Format: Email objects (from, subject, body, date)
+- Validation: sender address full-string match against contacts (no prefix
+  matching); thread ids format-checked before lookup; body non-empty; date
+  within the polling window
+- On validation failure: quarantine to a review label, alert, never triage
 
 ## Policy Layer
 - Autonomous: Triage, draft responses, file emails
@@ -224,6 +302,9 @@ Process inbox, triage by priority, draft responses, surface what matters.
 - On success: Extract response patterns, update sender context
 - On failure: Update triage rules, refine draft prompts
 - Skill updates: Triage skill, draft skill
+- Gate: model drafts the change → a different seat critiques it (confidence
+  floor 0.6; below that, log and surface, do not retry) → human applies
+- Reversible: skills are git-tracked; every applied change is one revert away
 
 ## Metrics
 - Runs per day: 96
