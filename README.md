@@ -4,14 +4,23 @@ PROPRIETARY — ALL RIGHTS RESERVED.
 
 No copying, redistribution, resale, sublicensing, or derivative use is authorized. No MIT, open-source, permissive, or other license may be added or substituted without Alex Bouchard's prior written approval. See LICENSE.
 
-Private suite. Two skills that are meant to be loaded together.
+Private suite. Two skills that are meant to be loaded together, plus two MidnightDev operation skills.
 
 1. **Work topology** — `skills/agentic-graph-orchestration`
 2. **Memory closer** — `skills/gbrain-graph-companion`
+3. **Graph operations** — `skills/graphiti-brain`
+4. **Loop design** — `skills/self-improving-loop`
 
 The model does not own accept, post, pay, or remember.
 
-This is a clone of those two skills in one repo so they can be dropped into Claude / Codex / Grok as a pair. Canonical singles stay in their own repos. Edit there, copy here.
+This is a clone of those skills in one repo so they can be dropped into Claude / Codex / Grok as a set. Canonical singles stay in their own repos. Edit there, copy here.
+
+`graphiti-brain` and `self-improving-loop` were added 2026-09-27 from
+`midnightdev/agents/skills/`, which is **not** version-controlled — this repo is
+now their canonical home. `graphiti-brain` was reconciled against the live
+stack the same day (19 MCP tools, receipt-based `add_memory`, the measured
+38-group namespace map, `gemini-3.1-flash-lite` replacing the 2.5 Flash models
+Google retires 2026-10-16).
 
 ## Stack
 
@@ -46,6 +55,8 @@ Load the graph skill when the job is a loop. Load the companion when a node shou
 ```sh
 cp -R skills/agentic-graph-orchestration ~/.claude/skills/
 cp -R skills/gbrain-graph-companion ~/.claude/skills/
+cp -R skills/graphiti-brain ~/.claude/skills/
+cp -R skills/self-improving-loop ~/.claude/skills/
 ```
 
 Same paths work under `.grok/skills/` or `.codex/skills/`.
@@ -61,6 +72,8 @@ python3 skills/gbrain-graph-companion/scripts/lint-note.py   skills/gbrain-graph
 |---|---|
 | `agentic-graph-orchestration` | Work graph. Irreversible edges stay open. |
 | `gbrain-graph-companion` | Memory graph. `remember` is irreversible. |
+| `graphiti-brain` | Operates the entity store through the 19 MCP tools. Now canonical here. |
+| `self-improving-loop` | Loop design template. Feeds the work graph. |
 
 | Not copied in | Why |
 |---|---|
