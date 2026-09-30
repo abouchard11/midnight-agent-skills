@@ -17,10 +17,19 @@ model stage is **additive and non-authoritative** — it classifies and delegate
 it never replaces the ledger. A briefing that is only model output has no
 ground truth to be wrong against.
 
-1. Deterministic input: `cad brief --write` (no model). Capture its stdout.
-2. Model stage: classify that stdout, extract learnings, plan the day.
-3. Delivery: the ledger artifact and the model sections are separately
-   attributable. If the model stage fails, the ledger still stands.
+1. Deterministic input: `compounding-sensor.py` (job health + aging, no model)
+   and `cad brief --write` (the decision ledger, no model). Capture both.
+2. Model stage: classify that output, extract learnings, plan the day.
+3. Delivery: the deterministic artifacts and the model sections are separately
+   attributable. If the model stage fails, the deterministic half still stands.
+
+## The compounding metric
+
+Aging, not growth. Additions are not value, and the library grows on its own
+sync schedule whether or not this skill ever runs — so "library grew by N" is
+both confounded and a metric that rises when junk lands. How long the oldest
+open item has been open, and whether that number is rising, is the number that
+changes a decision.
 
 ## Trigger
 
@@ -82,10 +91,17 @@ For each insight:
 ```markdown
 # Morning Briefing — [DATE]
 
-## Overnight Summary
-- [N] tasks completed
-- [N] succeeded, [N] failed, [N] degraded
-- Library grew by [N] items
+## Job health
+- [N] jobs: [N] scheduled, [N] paused
+- failing or last-status-blocked: [N]
+- [RED] [job] — [why it is failing or stale]
+
+## Aging / flow (the compounding metric)
+- ungraded decisions: [N] (Δ [±N]), oldest [N]d (Δ [±N])
+- unexecuted commitments: [N] (Δ [±N]), oldest [N]d (Δ [±N])
+- crossed thresholds: >7d [N], >14d [N], >30d [N]
+- last 7d: opened [N], closed [N], settled [N]
+- direction: draining | holding | ACCUMULATING
 
 ## Critical Items
 - [RED] [item] — [action needed]
@@ -96,22 +112,29 @@ For each insight:
 
 ## Today's Plan
 1. [highest-leverage task]
-2. [next task]
-3. [next task]
 
 ## Delegated Today
-- [task] → [agent]
+- [task] → [agent]   (or: nothing delegated)
 ```
 
 ## Verification
 
 Checkable, not asserted. A run passes only if the emitted artifact contains:
 
-- [ ] succeeded / failed / degraded **counts** (all three present)
+- [ ] **Job health**: total jobs, scheduled vs paused, and a failing count —
+      plus every failing or stale job named, or an explicit "none"
+- [ ] **Aging**: the oldest-open age in days, present as a **number**, for BOTH
+      ungraded decisions and unexecuted commitments
+- [ ] **Trend**: each aging figure carries a delta against the previous
+      snapshot — never a bare total, because a total says nothing about direction
+- [ ] **7-day direction**: opened vs closed, plus an explicit
+      draining / holding / **ACCUMULATING** verdict
 - [ ] at least one R/Y/B classification line
-- [ ] a **library-growth number** (the compounding metric — the whole point)
 - [ ] a Today's Plan section with ≥1 item
 - [ ] a Delegated section, or an explicit "nothing delegated"
+
+There is deliberately **no** "library grew by N items" box — see *The compounding
+metric* above. Aging is the metric; growth is a vanity counter.
 
 Diff the first run against this list before enabling the schedule. An
 installed skill is not an executed skill: loader discovery, job invocation,
@@ -129,6 +152,17 @@ output validation, and delivery are four separate things to test.
   just never runs.
 - **Conflating a paused job with a missing job:** check `state` in the live
   jobs file, not the display prose.
+- **Trusting `failure_streak` as the health signal:** a job can run fine and
+  silently fail to deliver — `failure_streak` stays 0 and every health surface
+  calls it healthy. Six jobs sat in exactly that state. Check
+  `last_delivery_error`, not just the streak.
+- **Reporting a total instead of a trend:** "20 open" is not a finding; "20 open,
+  oldest 27.8d, accumulating at 10/week" is. An unclosed queue looks identical
+  to a healthy one if you only ever print its size.
+- **Counting diagnostic runs as real work:** `cad brief` excludes three
+  `DIAGNOSTIC_RUNS` prefixes from every open-loop count. A sensor that does not
+  apply the same exclusion reports a different number for the same queue
+  (measured: 16 vs 13). Read the constant from caduceus rather than mirroring it.
 
 ## Example
 
