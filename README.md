@@ -10,6 +10,7 @@ Private suite. Two skills that are meant to be loaded together, plus two Midnigh
 2. **Memory closer** — `skills/gbrain-graph-companion`
 3. **Graph operations** — `skills/graphiti-brain`
 4. **Loop design** — `skills/self-improving-loop`
+5. **Daily compounding** — `skills/daily-compounding`
 
 The model does not own accept, post, pay, or remember.
 
@@ -21,6 +22,15 @@ now their canonical home. `graphiti-brain` was reconciled against the live
 stack the same day (19 MCP tools, receipt-based `add_memory`, the measured
 38-group namespace map, `gemini-3.1-flash-lite` replacing the 2.5 Flash models
 Google retires 2026-10-16).
+
+`daily-compounding` was added 2026-09-29. It had never run: no YAML frontmatter,
+an install instruction pointing at a flat path Hermes cannot load, and no
+scheduler entry — the 07:00 job that looked like it was paused, and the 08:00
+one that was failing on a missing credential. The rewrite pins the ordering rule
+(deterministic `cad brief --write` first and authoritative; model classification
+additive and non-authoritative) and a checkable verification list. Verified by an
+independent council (FINISHER + SPARRING) that confirmed the diagnosis and
+rejected the original "fold it into the brief" fix in favour of ledger-first.
 
 ## Stack
 
@@ -57,6 +67,14 @@ cp -R skills/agentic-graph-orchestration ~/.claude/skills/
 cp -R skills/gbrain-graph-companion ~/.claude/skills/
 cp -R skills/graphiti-brain ~/.claude/skills/
 cp -R skills/self-improving-loop ~/.claude/skills/
+cp -R skills/daily-compounding ~/.claude/skills/
+```
+
+For Hermes the target is `<category>/<name>/SKILL.md` and the skill **must** carry
+YAML frontmatter — a flat `*.md` in `~/.hermes/skills/` never loads:
+
+```sh
+cp -R skills/daily-compounding ~/.hermes/skills/software-development/
 ```
 
 Same paths work under `.grok/skills/` or `.codex/skills/`.
@@ -74,6 +92,7 @@ python3 skills/gbrain-graph-companion/scripts/lint-note.py   skills/gbrain-graph
 | `gbrain-graph-companion` | Memory graph. `remember` is irreversible. |
 | `graphiti-brain` | Operates the entity store through the 19 MCP tools. Now canonical here. |
 | `self-improving-loop` | Loop design template. Feeds the work graph. |
+| `daily-compounding` | Morning brief. Deterministic ledger first, model stage additive. |
 
 | Not copied in | Why |
 |---|---|
