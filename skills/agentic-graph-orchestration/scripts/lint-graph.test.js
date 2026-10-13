@@ -18,6 +18,15 @@ test("memory loop passes — remember is not model-owned", () => {
   assert.deepEqual(loadAndLint(memoryExample), []);
 });
 
+test("README refusal demo: a graph that lets the model close pay is refused", () => {
+  // The quickstart shows this file failing. If it ever passes, the README lies.
+  const errors = loadAndLint(path.join(examples, "refused-model-pays.json"));
+  assert.ok(
+    errors.some((e) => /pay: irreversible edge cannot be closed by the model/.test(e)),
+    `expected the pay refusal, got: ${errors.join("; ")}`
+  );
+});
+
 test("model cannot close remember", () => {
   const errors = lintGraph({
     name: "cheat-memory",
