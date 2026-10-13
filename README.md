@@ -41,7 +41,7 @@ midnight-agent-skills           ← THIS REPO: packaging pair (work + memory clo
         ↑ consumed by
 midnight-reasoning              ← reflection / critic library
         ↑ consumed by
-hermes-command-center           ← operator UI + run state
+Kiel (runkiel.com)              ← operator UI + run state
 ```
 
 Ownership is directed. Canonical skill content lives upstream. This repo packages the pair for install; edit upstream, copy here.
@@ -96,7 +96,7 @@ python3 skills/gbrain-graph-companion/scripts/lint-note.py   skills/gbrain-graph
 
 | Not copied in | Why |
 |---|---|
-| [dozen](https://github.com/abouchard11/dozen) | Reference *product*, not a skill |
+| Dozen (joindozen.com, source private) | Reference *product*, not a skill |
 | [graphiti-neo4j-ops](https://github.com/abouchard11/graphiti-neo4j-ops) | Operates the entity store. Different job. |
 | [llm-safety-gate](https://github.com/abouchard11/llm-safety-gate) | Fail-closed classifier machine. Import it; do not wrap it as a skill. |
 | [midnight-seo-skills](https://github.com/abouchard11/midnight-seo-skills) | Portfolio SEO. Does not share this hard rule. |
@@ -105,7 +105,7 @@ python3 skills/gbrain-graph-companion/scripts/lint-note.py   skills/gbrain-graph
 
 ## Related
 
-- [agentic-graph-orchestration](https://github.com/abouchard11/agentic-graph-orchestration) — work topology (private, canonical)
-- [midnight-reasoning](https://github.com/abouchard11/midnight-reasoning) — cross-run reflection / critic (private)
-- [hermes-command-center](https://github.com/abouchard11/hermes-command-center) — operator UI (private)
-- [dozen](https://github.com/abouchard11/dozen) — marketplace graph these skills were dogfooded on (private)
+- [agentic-graph-orchestration](https://github.com/abouchard11/agentic-graph-orchestration) — work topology (canonical)
+- [midnight-reasoning](https://github.com/abouchard11/midnight-reasoning) — cross-run reflection / critic
+- Kiel — operator UI, live at runkiel.com (source private)
+- Dozen — marketplace graph these skills were dogfooded on, live at joindozen.com (source private)
