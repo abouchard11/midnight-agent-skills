@@ -1,8 +1,9 @@
 ---
 name: gbrain-graph-companion
-description: "Gate GBrain and Graphiti writes so the model drafts notes but cannot own remember, forget, or persist. Use when the user mentions GBrain, gbrain, remember this, persist a learning, memory sync, Graphiti vs GBrain, trust tiers, or session-end memory. Not for product UI, Stripe, or building GBrain itself."
-type: workflow
-lifecycle: active
+description: Gate GBrain and Graphiti writes so the model drafts notes but cannot own remember, forget, or persist. Use when the user mentions GBrain, gbrain, remember this, persist a learning, memory sync, Graphiti vs GBrain, trust tiers, or session-end memory. Not for product UI, Stripe, or building GBrain itself.
+metadata:
+  type: workflow
+  lifecycle: active
 ---
 
 # GBrain Graph Companion — The model does not own remember

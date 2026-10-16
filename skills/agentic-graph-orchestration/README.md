@@ -10,6 +10,26 @@ Drop `SKILL.md` into Claude Code, Codex, or Grok skills. The agent is then requi
 4. Never let the model own irreversible gates (accept, post, pay, publish, safety).
 5. Lint the graph JSON. A graph that fails the linter is not ready to implement.
 
+## Quickstart (one minute, no dependencies)
+
+```sh
+git clone https://github.com/abouchard11/agentic-graph-orchestration && cd agentic-graph-orchestration
+npm test                                               # linter + runtime suites, sentinel, example lints
+node scripts/lint.js examples/refused-model-pays.json  # FAIL: the model may not close `pay`
+node scripts/run-graph.js examples/coding-loop.json    # halts at the human `plan` gate
+```
+
+The second command is the point of the repo. A graph that lets the model draft and verify
+an invoice is fine; the same graph refused the moment the model is also the one who pays:
+
+```
+FAIL examples/refused-model-pays.json
+  - pay: irreversible edge cannot be closed by the model
+```
+
+The third command exits `2` on purpose: `plan` is a human node, so the runtime stops and
+waits instead of letting anything decide for you. Node 22+ (tested on 22, 24 and 26); no packages to install.
+
 ## Stack
 
 ```
@@ -19,7 +39,7 @@ midnight-agent-skills           ← packaging pair (work + memory closer)
         ↑ consumed by
 midnight-reasoning              ← reflection / critic library
         ↑ consumed by
-hermes-command-center           ← operator UI + run state
+Kiel (runkiel.com)              ← operator UI + run state
 ```
 
 Ownership is directed. This repo is a source of truth. Downstream consumers read it; they do not edit it from product work.
@@ -40,7 +60,7 @@ node --test scripts/lint-graph.test.js scripts/run-graph.test.js
 node scripts/run-graph.js examples/coding-loop.json
 ```
 
-`run-graph.js` is the runtime. It lints, ticks ready nodes, retries only the declared inner loop, and **halts** on human/policy nodes. The model cannot close accept, post, pay, merge, or remember.
+`run-graph.js` is the runtime. It lints, ticks ready nodes, retries only the declared inner loop, and **halts** on human/policy nodes (exit `2` = waiting on a closer, by design). The model cannot close accept, post, pay, merge, or remember.
 
 ## What is novel, and what is not
 
@@ -67,17 +87,6 @@ Already in the wild:
 - A **GBrain companion** that applies the same hard rule to memory: observed notes die; only verified increments persist; Graphiti stays the entity store.
 
 That last point is the actual delta. Graph-engineering skills tell a coding agent how to fan out. This one tells a *product* which nodes the model is not allowed to own.
-
-## 25k stars?
-
-Unlikely from `SKILL.md` alone. Superpowers and GStack got there as installable daily drivers with a known person attached. Isolated graph-engineering skill repos are sitting at 0–6 stars.
-
-A path that *could* get there later (not now):
-
-1. Keep this private until the linter, two examples, and the Dozen demo are tight.
-2. Ship the skill **with** the clickable product, not as a manifesto.
-3. Write one launch essay: "The model does not own accept or post."
-4. Do not compete with GStack or Superpowers on "be a virtual engineering team." Compete on **product graphs with fail-closed external edges**.
 
 ## Layout
 
@@ -109,8 +118,8 @@ Apache License 2.0. See [LICENSE](LICENSE). Copyright 2026 Alex Bouchard.
 
 - [midnight-agent-skills](https://github.com/abouchard11/midnight-agent-skills) — this skill plus the GBrain companion as a drop-in pair
 - [midnight-reasoning](https://github.com/abouchard11/midnight-reasoning) — cross-run reflection / critic library
-- [hermes-command-center](https://github.com/abouchard11/hermes-command-center) — operator UI that consumes this stack (private)
-- [dozen](https://github.com/abouchard11/dozen) — reference product graph (private)
+- Kiel — operator console that consumes this stack, live at runkiel.com (source private)
+- Dozen — the reference product graph, live at joindozen.com (source private; its topology is in `examples/dozen-graph.md`)
 - [graphiti-neo4j-ops](https://github.com/abouchard11/graphiti-neo4j-ops) — Graphiti store the memory companion treats as canonical
 - [llm-safety-gate](https://github.com/abouchard11/llm-safety-gate) — fail-closed safety node
 - [yapoleons-court](https://github.com/abouchard11/yapoleons-court) — shipped game where the model cannot own the score
