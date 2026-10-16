@@ -1,0 +1,29 @@
+{
+  "name": "refused-model-pays",
+  "goal": "Draft a vendor invoice, verify the amount, and pay it — with the model closing the payment. The linter must refuse this graph.",
+  "stop": { "maxWallMinutes": 10, "maxUsd": 1 },
+  "nodes": [
+    {
+      "id": "draft-invoice",
+      "dependsOn": [],
+      "owns": ["invoices/draft.json"],
+      "closer": "model",
+      "doneWhen": "An invoice draft exists with vendor, amount, and line items."
+    },
+    {
+      "id": "verify-amount",
+      "dependsOn": ["draft-invoice"],
+      "verifies": ["draft-invoice"],
+      "owns": ["invoices/verification.json"],
+      "closer": "script",
+      "doneWhen": "The amount equals the sum of the line items and matches the purchase order."
+    },
+    {
+      "id": "pay",
+      "dependsOn": ["verify-amount"],
+      "owns": ["payments/"],
+      "closer": "model",
+      "doneWhen": "The vendor has been paid the verified amount."
+    }
+  ]
+}
