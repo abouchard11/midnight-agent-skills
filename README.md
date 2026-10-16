@@ -1,10 +1,6 @@
 # midnight-agent-skills
 
-PROPRIETARY — ALL RIGHTS RESERVED.
-
-No copying, redistribution, resale, sublicensing, or derivative use is authorized. No MIT, open-source, permissive, or other license may be added or substituted without Alex Bouchard's prior written approval. See LICENSE.
-
-Private suite. Two skills that are meant to be loaded together, plus two MidnightDev operation skills.
+Two skills that are meant to be loaded together, plus two MidnightDev operation skills.
 
 1. **Work topology** — `skills/agentic-graph-orchestration`
 2. **Memory closer** — `skills/gbrain-graph-companion`
@@ -102,6 +98,10 @@ python3 skills/gbrain-graph-companion/scripts/lint-note.py   skills/gbrain-graph
 | [midnight-seo-skills](https://github.com/abouchard11/midnight-seo-skills) | Portfolio SEO. Does not share this hard rule. |
 | [claude-desktop-skills](https://github.com/abouchard11/claude-desktop-skills) | Narrow knowledge-work prompts. Sibling craft, different layer. |
 | [midnight-reasoning](https://github.com/abouchard11/midnight-reasoning) | Reflection library — load as its own skill; not duplicated here yet |
+
+## License
+
+Apache License 2.0. See [LICENSE](LICENSE). Copyright 2026 Alex Bouchard.
 
 ## Related
 

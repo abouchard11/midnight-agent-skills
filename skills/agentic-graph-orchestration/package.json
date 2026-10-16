@@ -2,7 +2,7 @@
   "name": "agentic-graph-orchestration",
   "private": true,
   "description": "Verifier-first skill for closed-loop agent graphs. Accept and post stay open.",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "scripts": {
     "check-sentinel": "node scripts/check-sentinel.js",
     "lint-graphs": "node scripts/check-sentinel.js && node scripts/lint.js examples/dozen-graph.json && node scripts/lint.js examples/coding-loop.json && node scripts/lint.js companions/gbrain/examples/memory-loop.json",

@@ -2,7 +2,7 @@
   "name": "midnight-agent-skills",
   "private": true,
   "description": "Closed-loop agent skills: work topology plus a GBrain/Graphiti memory closer.",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "author": "Alex Bouchard",
   "scripts": {
     "test": "node --test skills/agentic-graph-orchestration/scripts/lint-graph.test.js skills/agentic-graph-orchestration/scripts/run-graph.test.js && python3 skills/gbrain-graph-companion/scripts/lint-note.test.py && python3 skills/gbrain-graph-companion/scripts/validate-event.test.py && python3 skills/daily-compounding/scripts/sensor.test.py"

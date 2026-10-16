@@ -101,14 +101,14 @@ companions/gbrain/           # GBrain companion: model does not own remember
 node scripts/lint-graph.js companions/gbrain/examples/memory-loop.json
 ```
 
-## Rights
+## License
 
-**Proprietary — all rights reserved. No license is granted.** See [LICENSE](LICENSE).
+Apache License 2.0. See [LICENSE](LICENSE). Copyright 2026 Alex Bouchard.
 
 ## Related
 
-- [midnight-agent-skills](https://github.com/abouchard11/midnight-agent-skills) — this skill plus the GBrain companion as a drop-in pair (private)
-- [midnight-reasoning](https://github.com/abouchard11/midnight-reasoning) — cross-run reflection / critic library (private)
+- [midnight-agent-skills](https://github.com/abouchard11/midnight-agent-skills) — this skill plus the GBrain companion as a drop-in pair
+- [midnight-reasoning](https://github.com/abouchard11/midnight-reasoning) — cross-run reflection / critic library
 - [hermes-command-center](https://github.com/abouchard11/hermes-command-center) — operator UI that consumes this stack (private)
 - [dozen](https://github.com/abouchard11/dozen) — reference product graph (private)
 - [graphiti-neo4j-ops](https://github.com/abouchard11/graphiti-neo4j-ops) — Graphiti store the memory companion treats as canonical
