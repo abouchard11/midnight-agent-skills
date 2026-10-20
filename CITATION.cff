@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "midnight-agent-skills"
+abstract: >-
+  Closed-loop agent skills for Claude Code and compatible agents, meant to be loaded
+  together: work topology, memory closer, graph operations, loop design and daily
+  compounding. The model does not own accept, post, pay or remember.
+authors:
+  - family-names: "Bouchard"
+    given-names: "Alex"
+    email: "alex@midnightdev.dev"
+    affiliation: "MidnightDev"
+    website: "https://midnightdev.dev"
+    orcid: "https://orcid.org/0009-0003-0911-9681"
+type: software
+repository-code: "https://github.com/abouchard11/midnight-agent-skills"
+url: "https://github.com/abouchard11/midnight-agent-skills"
+license: Apache-2.0
+date-released: 2026-08-19
+keywords:
+  - "agent-skills"
+  - "ai-agents"
+  - "agent-safety"
+  - "human-in-the-loop"
+  - "claude-code"
