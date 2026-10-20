@@ -1,5 +1,7 @@
 # midnight-agent-skills
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23502955.svg)](https://doi.org/10.5281/zenodo.23502955)
+
 Two skills that are meant to be loaded together, plus two MidnightDev operation skills.
 
 1. **Work topology** — `skills/agentic-graph-orchestration`
