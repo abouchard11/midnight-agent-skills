@@ -102,7 +102,7 @@ Treat durable procedures as markdown skills that can be loaded on demand.
 
 ## Reference implementation
 
-`examples/dozen-graph.md` + `examples/dozen-graph.json` document the live marketplace graph:
+`examples/marketplace-graph.md` + `examples/marketplace-graph.json` document a creator-marketplace graph:
 
 intake → safety → assemble → offer → **accept** → draft → verify → revise → review → **post** → measure → pay
 
@@ -114,7 +114,7 @@ A second, smaller topology lives in `examples/coding-loop.json` (plan → implem
 
 ```sh
 node scripts/check-sentinel.js
-node scripts/lint.js examples/dozen-graph.json
+node scripts/lint.js examples/marketplace-graph.json
 node scripts/lint.js examples/coding-loop.json
 node scripts/lint.js companions/gbrain/examples/memory-loop.json
 node --test scripts/lint-graph.test.js
@@ -160,7 +160,7 @@ The linter fails a graph that is missing a verifier, stop condition, or closer; 
 - `references/yc-personal-agi.md`
 - `references/user-patterns.md`
 - `references/prior-art.md`
-- `examples/dozen-graph.md`
+- `examples/marketplace-graph.md`
 - `examples/coding-loop.md`
 - `examples/grok-one-shot-product-build-prompt.md` — read when a user wants Grok, Claude, or Codex to execute a large autonomous product build from one detailed prompt.
 - `companions/gbrain/SKILL.md`

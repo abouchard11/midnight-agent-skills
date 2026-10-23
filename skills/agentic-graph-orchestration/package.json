@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "check-sentinel": "node scripts/check-sentinel.js",
-    "lint-graphs": "node scripts/check-sentinel.js && node scripts/lint.js examples/dozen-graph.json && node scripts/lint.js examples/coding-loop.json && node scripts/lint.js companions/gbrain/examples/memory-loop.json",
+    "lint-graphs": "node scripts/check-sentinel.js && node scripts/lint.js examples/marketplace-graph.json && node scripts/lint.js examples/coding-loop.json && node scripts/lint.js companions/gbrain/examples/memory-loop.json",
     "test": "node --test scripts/lint-graph.test.js scripts/run-graph.test.js scripts/check-sentinel.test.js scripts/preflight-sentinel.test.js scripts/sync-gates.test.js && npm run lint-graphs",
     "sync-gates": "node scripts/sync-gates.js",
     "run": "node scripts/run-graph.js"

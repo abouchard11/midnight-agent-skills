@@ -55,7 +55,7 @@ cp -R SKILL.md references examples scripts companions ~/.claude/skills/agentic-g
 Or clone this repo into your project's `.claude/skills/` or `.grok/skills/`.
 
 ```sh
-node scripts/lint-graph.js examples/dozen-graph.json
+node scripts/lint-graph.js examples/marketplace-graph.json
 node --test scripts/lint-graph.test.js scripts/run-graph.test.js
 node scripts/run-graph.js examples/coding-loop.json
 ```
@@ -83,7 +83,7 @@ Already in the wild:
 
 - A **skill** that forces topology + verifier-first discipline across Claude / Codex / Grok, with a **machine-checkable linter**.
 - A **hard rule** that external edges (accept, post, pay) stay open until a human or an explicit policy closes them.
-- A **reference product** (`examples/dozen-graph.md`) — an influencer-marketplace graph with fail-closed FTC / fake-engagement / banned-vertical gates — not another coding-agent hello world.
+- A **reference product** (`examples/marketplace-graph.md`) — an influencer-marketplace graph with fail-closed FTC / fake-engagement / banned-vertical gates — not another coding-agent hello world.
 - A **GBrain companion** that applies the same hard rule to memory: observed notes die; only verified increments persist; Graphiti stays the entity store.
 
 That last point is the actual delta. Graph-engineering skills tell a coding agent how to fan out. This one tells a *product* which nodes the model is not allowed to own.
@@ -93,8 +93,8 @@ That last point is the actual delta. Graph-engineering skills tell a coding agen
 ```
 SKILL.md                     # loaded on trigger
 references/                  # progressive disclosure + prior art
-examples/dozen-graph.md      # live product topology
-examples/dozen-graph.json    # linted machine spec
+examples/marketplace-graph.md      # product topology
+examples/marketplace-graph.json    # linted machine spec
 examples/coding-loop.md      # smaller coding-agent topology
 scripts/lint-graph.js        # fail a graph that cheats
 scripts/run-graph.js         # script-held runtime: lint, tick, human/policy gates
@@ -119,7 +119,6 @@ Apache License 2.0. See [LICENSE](LICENSE). Copyright 2026 Alex Bouchard.
 - [midnight-agent-skills](https://github.com/abouchard11/midnight-agent-skills) — this skill plus the GBrain companion as a drop-in pair
 - [midnight-reasoning](https://github.com/abouchard11/midnight-reasoning) — cross-run reflection / critic library
 - Kiel — operator console that consumes this stack, live at runkiel.com (source private)
-- Dozen — the reference product graph, live at joindozen.com (source private; its topology is in `examples/dozen-graph.md`)
 - [graphiti-neo4j-ops](https://github.com/abouchard11/graphiti-neo4j-ops) — Graphiti store the memory companion treats as canonical
 - [llm-safety-gate](https://github.com/abouchard11/llm-safety-gate) — fail-closed safety node
 - [yapoleons-court](https://github.com/abouchard11/yapoleons-court) — shipped game where the model cannot own the score

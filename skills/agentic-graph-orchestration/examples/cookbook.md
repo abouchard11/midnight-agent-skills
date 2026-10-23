@@ -18,6 +18,6 @@ python3 companions/gbrain/scripts/lint-note.py .scratch/note.md
 
 If that exits 1, do not `gbrain capture`. Observed notes die with the session.
 
-## Dozen-shaped product
+## Marketplace-shaped product
 
-Copy `examples/dozen-graph.json`. Do not auto-close accept, post, or pay so a demo handler looks finished.
+Copy `examples/marketplace-graph.json`. Do not auto-close accept, post, or pay so a demo handler looks finished.

@@ -7,8 +7,8 @@ const { startRun, tick, closeNode, drive, isIrreversible } = require("./run-grap
 const coding = JSON.parse(
   fs.readFileSync(path.join(__dirname, "../examples/coding-loop.json"), "utf8"),
 );
-const dozen = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "../examples/dozen-graph.json"), "utf8"),
+const marketplace = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "../examples/marketplace-graph.json"), "utf8"),
 );
 
 const pass = {
@@ -90,13 +90,13 @@ test("verify failure retries implement-verify, not plan", () => {
   assert.equal(run.loopAttempts["implement-verify"], 1);
 });
 
-test("dozen safety then accept stay open — model handlers cannot close them", () => {
+test("marketplace safety then accept stay open — model handlers cannot close them", () => {
   const handlers = Object.fromEntries(
-    dozen.nodes
+    marketplace.nodes
       .filter((n) => n.closer === "model" || n.closer === "script")
       .map((n) => [n.id, () => ({ ok: true, evidence: `${n.id} ok` })]),
   );
-  let run = drive(dozen, { handlers, maxTicks: 20 });
+  let run = drive(marketplace, { handlers, maxTicks: 20 });
   assert.equal(run.status.safety, "gate");
   run = closeNode(run, "safety", { closer: "policy", evidence: "verticals clean" });
   run = driveTick(run, { handlers, maxTicks: 8 });

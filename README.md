@@ -78,7 +78,7 @@ cp -R skills/daily-compounding ~/.hermes/skills/software-development/
 Same paths work under `.grok/skills/` or `.codex/skills/`.
 
 ```sh
-node skills/agentic-graph-orchestration/scripts/lint-graph.js   skills/agentic-graph-orchestration/examples/dozen-graph.json
+node skills/agentic-graph-orchestration/scripts/lint-graph.js   skills/agentic-graph-orchestration/examples/marketplace-graph.json
 python3 skills/gbrain-graph-companion/scripts/lint-note.py   skills/gbrain-graph-companion/examples/good-verified.md
 ```
 
@@ -94,7 +94,6 @@ python3 skills/gbrain-graph-companion/scripts/lint-note.py   skills/gbrain-graph
 
 | Not copied in | Why |
 |---|---|
-| Dozen (joindozen.com, source private) | Reference *product*, not a skill |
 | [graphiti-neo4j-ops](https://github.com/abouchard11/graphiti-neo4j-ops) | Operates the entity store. Different job. |
 | [llm-safety-gate](https://github.com/abouchard11/llm-safety-gate) | Fail-closed classifier machine. Import it; do not wrap it as a skill. |
 | [midnight-seo-skills](https://github.com/abouchard11/midnight-seo-skills) | Portfolio SEO. Does not share this hard rule. |
@@ -110,4 +109,3 @@ Apache License 2.0. See [LICENSE](LICENSE). Copyright 2026 Alex Bouchard.
 - [agentic-graph-orchestration](https://github.com/abouchard11/agentic-graph-orchestration) — work topology (canonical)
 - [midnight-reasoning](https://github.com/abouchard11/midnight-reasoning) — cross-run reflection / critic
 - Kiel — operator UI, live at runkiel.com (source private)
-- Dozen — marketplace graph these skills were dogfooded on, live at joindozen.com (source private)

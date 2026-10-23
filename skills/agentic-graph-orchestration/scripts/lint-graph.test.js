@@ -6,8 +6,8 @@ const { lintGraph, loadAndLint } = require("./lint-graph.js");
 const examples = path.join(__dirname, "..", "examples");
 const memoryExample = path.join(__dirname, "..", "companions/gbrain/examples/memory-loop.json");
 
-test("dozen graph passes", () => {
-  assert.deepEqual(loadAndLint(path.join(examples, "dozen-graph.json")), []);
+test("marketplace graph passes", () => {
+  assert.deepEqual(loadAndLint(path.join(examples, "marketplace-graph.json")), []);
 });
 
 test("coding loop passes", () => {

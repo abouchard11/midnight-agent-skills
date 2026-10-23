@@ -43,7 +43,7 @@ A fact may appear in at most **one** durable lane plus an optional pointer.
 
 | Fact kind | Lane |
 |-----------|------|
-| "Maya accepted seat s3" | Graphiti episode in the dozen `group_id`, after accept closed |
+| "Maya accepted seat s3" | Graphiti episode in the product's `group_id`, after accept closed |
 | "Accept gate is ≥60% and six seats" | GBrain skill-learning page (reusable procedure) |
 | "Stripe session cs_xxx funded campaign C" | Graphiti + pointer to Stripe id; never the raw secret |
 | "I think we should raise the fee" | observed — do not persist |
