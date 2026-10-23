@@ -1,6 +1,6 @@
 # Coding loop — smallest useful graph
 
-Use this when the job is a coding agent, not a product. It is the degenerate case the Dozen graph sits on top of.
+Use this when the job is a coding agent, not a product. It is the degenerate case the marketplace graph sits on top of.
 
 Machine spec: `examples/coding-loop.json`.
 

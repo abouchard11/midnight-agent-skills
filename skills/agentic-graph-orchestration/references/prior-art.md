@@ -72,7 +72,7 @@ components is tracked in their own repos, not here.
 
 1. **External edges stay open.** Human-approval-gates in coding skills are "ask before merge." Here, accept / post / pay are first-class product nodes that the model cannot mark passed.
 2. **A linter.** `scripts/lint-graph.js` fails a graph that lets the model own an irreversible edge. Most skill repos are prose. (Since 2026: the *concept* is published — see Agentproof above — so the honest claim is shipping, not invention: a working, mutation-tested, sentinel-hardened gate you can run today, not a paper.)
-3. **A product graph, not a coding graph.** Dozen is a marketplace with FTC, fake-engagement, and payout verifiers. The worked example is not "plan → implement → test."
+3. **A product graph, not a coding graph.** The reference example is a marketplace with FTC, fake-engagement, and payout verifiers. The worked example is not "plan → implement → test."
 4. **A memory companion with the same hard rule.** `remember` / `forget` are irreversible. Graphiti stays the entity store. GBrain holds pages. Harness `MEMORY.md` is a cache. (Weakest novelty leg — Total Recall and OWASP agent-memory-guard both ship write-time gates; see "Shipped implementations" above. What is ours is the *coupling* of the memory gate to the same closer/verifier contract the rest of the graph runs on.)
 
 If a later public launch essay skips this file, it is dishonest.

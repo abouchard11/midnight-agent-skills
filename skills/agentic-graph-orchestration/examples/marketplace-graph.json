@@ -1,5 +1,5 @@
 {
-  "name": "dozen",
+  "name": "marketplace",
   "goal": "Run a micro-creator swarm from brief to payout without the model owning accept, post, or pay.",
   "stop": {
     "maxWallMinutes": 10080,
