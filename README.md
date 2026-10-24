@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23502955.svg)](https://doi.org/10.5281/zenodo.23502955)
 
-Two skills that are meant to be loaded together, plus two MidnightDev operation skills.
+Five core skills, plus four reviewed workflow skills in draft lifecycle.
 
 1. **Work topology** — `skills/agentic-graph-orchestration`
 2. **Memory closer** — `skills/gbrain-graph-companion`
@@ -10,9 +10,19 @@ Two skills that are meant to be loaded together, plus two MidnightDev operation 
 4. **Loop design** — `skills/self-improving-loop`
 5. **Daily compounding** — `skills/daily-compounding`
 
+Additional draft workflows:
+
+6. **Ablation** — `skills/ablation` (controlled evaluation of optional agent scaffolding)
+7. **Compendium research** — `skills/compendium-research` (cited research briefings)
+8. **Lead-gen pipeline** — `skills/lead-gen-pipeline` (funnel design and evidence-based reporting)
+9. **Voice character engine** — `skills/voice-character-engine` (character specification and evaluation)
+
+These four additions are workflow guidance, not deployed integrations. See
+[DRAFTS.md](DRAFTS.md) for skills intentionally excluded from publication.
+
 The model does not own accept, post, pay, or remember.
 
-This is a clone of those skills in one repo so they can be dropped into Claude / Codex / Grok as a set. Canonical singles stay in their own repos. Edit there, copy here.
+The five core skills are packaged here for Claude / Codex / Grok. The four additional workflows are draft guidance maintained in this repository; they do not provide deployed integrations.
 
 `graphiti-brain` and `self-improving-loop` were added 2026-09-27 from
 `midnightdev/agents/skills/`, which is **not** version-controlled — this repo is
@@ -35,14 +45,14 @@ rejected the original "fold it into the brief" fix in favour of ledger-first.
 ```
 agentic-graph-orchestration     ← canonical work topology + linter
         ↑ consumed by
-midnight-agent-skills           ← THIS REPO: packaging pair (work + memory closer)
+midnight-agent-skills           ← THIS REPO: five core skills + four draft workflows
         ↑ consumed by
 midnight-reasoning              ← reflection / critic library
         ↑ consumed by
 Kiel (runkiel.com)              ← operator UI + run state
 ```
 
-Ownership is directed. Canonical skill content lives upstream. This repo packages the pair for install; edit upstream, copy here.
+The existing core skills retain their upstream ownership where documented. The four new workflow drafts are maintained here and should be treated as proposals until their procedures are validated in use.
 
 ## How they compose
 
@@ -58,7 +68,7 @@ Graphiti  (entities)     GBrain  (pages)     MEMORY.md  (cache)
 
 Load the graph skill when the job is a loop. Load the companion when a node should outlive the process. A passed `pay` node may produce a `decided` memory. An open `pay` node may not.
 
-## Install
+## Install core skills
 
 ```sh
 cp -R skills/agentic-graph-orchestration ~/.claude/skills/
@@ -66,6 +76,12 @@ cp -R skills/gbrain-graph-companion ~/.claude/skills/
 cp -R skills/graphiti-brain ~/.claude/skills/
 cp -R skills/self-improving-loop ~/.claude/skills/
 cp -R skills/daily-compounding ~/.claude/skills/
+```
+
+To try an additional draft workflow, copy its directory into the same skill location, for example:
+
+```sh
+cp -R skills/ablation ~/.claude/skills/
 ```
 
 For Hermes the target is `<category>/<name>/SKILL.md` and the skill **must** carry
@@ -91,6 +107,10 @@ python3 skills/gbrain-graph-companion/scripts/lint-note.py   skills/gbrain-graph
 | `graphiti-brain` | Operates the entity store through the 19 MCP tools. Now canonical here. |
 | `self-improving-loop` | Loop design template. Feeds the work graph. |
 | `daily-compounding` | Morning brief. Deterministic ledger first, model stage additive. |
+| `ablation` | Controlled comparison of optional agent scaffolding; preserves mandatory controls. |
+| `compendium-research` | Dated source-led research briefings; persistence only when authorized. |
+| `lead-gen-pipeline` | Funnel definitions and reporting; no CRM operation or lead contact. |
+| `voice-character-engine` | Character specification and evaluation; not a memory runtime. |
 
 | Not copied in | Why |
 |---|---|
